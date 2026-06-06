@@ -82,8 +82,7 @@ const LayerManager = {
   async loadLayer(id) {
     if (this.layerGroups[id]?._loaded) return;
     this.showLoading(`Loading ${id}...`);
-    // Auto-hide loading after 15 seconds
-    const timeout = setTimeout(() => this.hideLoading(), 15000);
+    const timeout = setTimeout(() => { this.hideLoading(); console.warn(`Load timeout for ${id}`); }, 20000);
     this.loadingTimeouts.set(id, timeout);
     try {
       let g;
@@ -145,6 +144,16 @@ const LayerManager = {
 
   renderGeoJSON(id, g) {
     const def = this.getLayerDef(id); const color = def?.color || Utils.getTypeColor('other'); const lg = this.layerGroups[id];
+    
+    // Build a lookup map from GeoJSON for fast coordinate matching
+    const coordLookup = new Map();
+    g.features.forEach(f => {
+      if (f.geometry?.coordinates?.length >= 2) {
+        const key = `${f.geometry.coordinates[0].toFixed(6)},${f.geometry.coordinates[1].toFixed(6)}`;
+        coordLookup.set(key, f);
+      }
+    });
+
     L.geoJSON(g, {
       pointToLayer: (f,ll) => L.marker(ll, { icon: Utils.getMarkerIcon(f.properties.type || f.properties.structure_type || id, id==='contributions') }),
       onEachFeature: (f,layer) => {
@@ -154,7 +163,26 @@ const LayerManager = {
       },
       filter: f => this.shouldShowFeature(f,id)
     }).addTo(lg);
-    lg.eachLayer(layer => { const s=L.stamp(layer); if(!this.featureCache.has(s)){ const feat=g.features.find(f=>Math.abs(f.geometry.coordinates[1]-layer.getLatLng().lat)<1e-5&&Math.abs(f.geometry.coordinates[0]-layer.getLatLng().lng)<1e-5); if(feat) this.featureCache.set(s,{layer,feature:feat,layerId:id}); } });
+
+    // Safely populate featureCache using coordinate lookup (avoids getLatLng issues)
+    lg.eachLayer(layer => {
+      const stamp = L.stamp(layer);
+      if (!this.featureCache.has(stamp)) {
+        // Try to get coordinates from marker
+        let lat, lng;
+        if (typeof layer.getLatLng === 'function') {
+          const ll = layer.getLatLng();
+          lat = ll.lat; lng = ll.lng;
+        } else if (layer._latlng) { // fallback for internal property
+          lat = layer._latlng.lat; lng = layer._latlng.lng;
+        }
+        if (lat !== undefined && lng !== undefined) {
+          const key = `${lng.toFixed(6)},${lat.toFixed(6)}`;
+          const feat = coordLookup.get(key);
+          if (feat) this.featureCache.set(stamp, { layer, feature:feat, layerId:id });
+        }
+      }
+    });
   },
 
   getLayerDef(id) {
