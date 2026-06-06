@@ -59,3 +59,29 @@ const App = { initialized:false, contributionMode:false,
 };
 
 document.addEventListener('DOMContentLoaded',()=>App.init()); window.App=App;
+// Override hideLoading to force hide
+const originalHideLoading = App.hideLoading;
+App.hideLoading = function() {
+  const o = document.getElementById('loading-overlay');
+  if (o) {
+    o.hidden = true;
+    o.style.display = 'none';
+    o.style.visibility = 'hidden';
+    o.style.opacity = '0';
+    o.style.pointerEvents = 'none';
+  }
+  originalHideLoading.call(this);
+};
+
+// Also force hide after a delay as safety net
+setTimeout(() => {
+  const o = document.getElementById('loading-overlay');
+  if (o && !o.hidden) {
+    o.hidden = true;
+    o.style.display = 'none';
+    o.style.visibility = 'hidden';
+    o.style.opacity = '0';
+    o.style.pointerEvents = 'none';
+    console.log('Force-hid loading overlay');
+  }
+}, 3000);
