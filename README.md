@@ -6,6 +6,10 @@ A WIP vibecoded, open-source, simply navigated website serving as the central re
 
 The information and maps are scattered around the idea is to have them all in one place and foreverybody to get involved.
 
+Ideas : implement a layer of sites that where excavated and documented with links to papers and videos documentaries
+Include get involved section.
+
+
 ## Features
 
 - **Super Map Aggregator**: Aggregates multiple datasets (GlobalKites, EAMENA, Pleiades, OpenStreetMap) onto one unified map
