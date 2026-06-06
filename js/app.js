@@ -6,8 +6,6 @@ const App = { initialized:false, contributionMode:false,
     if(this.initialized) return; console.log('Initializing Works of the Old Men Hub...');
     try{
       this.showLoading('Initializing map...');
-      
-      // Wait for Leaflet to be ready
       await this.waitForLeaflet();
       
       MapManager.init('map'); this.map = MapManager.getMap();
@@ -25,8 +23,8 @@ const App = { initialized:false, contributionMode:false,
       const check = setInterval(() => {
         attempts++;
         if (window.L) { clearInterval(check); resolve(); }
-        else if (attempts > 50) { clearInterval(check); reject(new Error('Leaflet failed to load')); }
-      }, 100);
+        else if (attempts > 100) { clearInterval(check); reject(new Error('Leaflet failed to load')); }
+      }, 50);
     });
   },
 
@@ -49,7 +47,7 @@ const App = { initialized:false, contributionMode:false,
       .marker-contribution svg{filter:drop-shadow(0 2px 4px rgba(0,0,0,.3));}
       .empty-state{padding:16px;text-align:center;color:#999;font-size:.8rem;}
       #export-layer-list .btn{text-align:left;}
-      #map { width: 100%; height: 100%; display: block; }
+      #map { width: 100%; height: 100%; display: block; visibility: visible; }
       .leaflet-container { background: #f5f2eb; }
     `; document.head.appendChild(s);
   },
