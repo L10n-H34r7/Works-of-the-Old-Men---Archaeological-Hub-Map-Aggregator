@@ -6,12 +6,28 @@ const App = { initialized:false, contributionMode:false,
     if(this.initialized) return; console.log('Initializing Works of the Old Men Hub...');
     try{
       this.showLoading('Initializing map...');
+      
+      // Wait for Leaflet to be ready
+      await this.waitForLeaflet();
+      
       MapManager.init('map'); this.map = MapManager.getMap();
       LayerManager.init(this.map); UIManager.init(); ContributionTool.init(this.map);
       this.setupGlobalEvents(); this.addCustomStyles();
       this.initialized=true; this.hideLoading(); console.log('Works of the Old Men Hub ready!');
       setTimeout(()=>Utils.showToast('Welcome to Works of the Old Men Hub','success'),500);
-    }catch(e){ console.error('Init failed:',e); this.hideLoading(); Utils.showToast('Failed to initialize','error'); }
+    }catch(e){ console.error('Init failed:',e); this.hideLoading(); Utils.showToast('Failed to initialize: ' + e.message,'error'); }
+  },
+
+  waitForLeaflet() {
+    return new Promise((resolve, reject) => {
+      if (window.L) { resolve(); return; }
+      let attempts = 0;
+      const check = setInterval(() => {
+        attempts++;
+        if (window.L) { clearInterval(check); resolve(); }
+        else if (attempts > 50) { clearInterval(check); reject(new Error('Leaflet failed to load')); }
+      }, 100);
+    });
   },
 
   setupGlobalEvents(){
@@ -33,6 +49,8 @@ const App = { initialized:false, contributionMode:false,
       .marker-contribution svg{filter:drop-shadow(0 2px 4px rgba(0,0,0,.3));}
       .empty-state{padding:16px;text-align:center;color:#999;font-size:.8rem;}
       #export-layer-list .btn{text-align:left;}
+      #map { width: 100%; height: 100%; display: block; }
+      .leaflet-container { background: #f5f2eb; }
     `; document.head.appendChild(s);
   },
 
