@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2026 L10n-H34r7
+Copyright (c) 2026 Works of the Old Men Archaeological Hub
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,3 +19,28 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+Third-party Data Licenses:
+
+1. GlobalKites Dataset (data/globalkites/*.geojson)
+   - Source: https://doi.org/10.5281/zenodo.14844953
+   - License: Creative Commons Attribution 4.0 International (CC BY 4.0)
+   - Citation: Barge, O., Régagnon, E., Abu-Azizeh, W., Bouzid, S., Brochier, J., & Crassard, R. (2024). Desert kites and related constructions. Zenodo. https://doi.org/10.5281/zenodo.14844953
+
+2. EAMENA Database
+   - Source: https://database.eamena.org/
+   - License: Open Access (varies by record)
+
+3. Pleiades Gazetteer
+   - Source: https://pleiades.stoa.org/
+   - License: Creative Commons Attribution 3.0 Unported (CC BY 3.0)
+
+4. OpenStreetMap
+   - Source: https://www.openstreetmap.org/
+   - License: Open Database License (ODbL) v1.0
+
+5. Basemaps
+   - Esri World Imagery: Terms of Use apply
+   - OpenStreetMap: © OpenStreetMap contributors
