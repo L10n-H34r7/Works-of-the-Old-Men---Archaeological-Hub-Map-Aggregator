@@ -91,9 +91,9 @@ const UIManager = { panels:{}, buttons:{}, filterSelects:{}, activePanel:null, f
 
   updateContributionsList() {
     const c=document.getElementById('contrib-items'); if(!c) return;
-    const f=[]; window.LayerManager?.layerGroups.contributions.eachLayer(l=>{ const s=L.stamp(l); const ca=window.LayerManager?.featureCache.get(s); if(ca&&ca.feature) f.push(ca.feature); });
+    const f=[]; window.LayerManager?.layerGroups.contributions?.eachLayer(l=>{ const s=L.stamp(l); const ca=window.LayerManager?.featureCache.get(s); if(ca&&ca.feature) f.push(ca.feature); });
     if(f.length===0){ c.innerHTML='<li class="empty-state">No contributions yet</li>'; return; }
-    c.innerHTML=f.map(feat=>{ const p=feat.properties, co=feat.geometry.coordinates; return `<li data-id="${p._id}"><div><span class="contrib-item-type">${Utils.getTypeDisplayName(p.type)}</span>${p.name?`<div class="contrib-item-name">${p.name}</div>`:''}</div><div><span class="contrib-item-coords">${Utils.formatCoords(co[1],co[0],4)}</span><button class="btn btn-small" onclick="window.UIManager.removeContribution('${p._id}')" title="Remove">✕</button></div></li>'; }).join('');
+    c.innerHTML=f.map(feat=>{ const p=feat.properties, co=feat.geometry.coordinates; return '<li data-id="'+p._id+'"><div><span class="contrib-item-type">'+Utils.getTypeDisplayName(p.type)+'</span>'+(p.name?'<div class="contrib-item-name">'+p.name+'</div>':'')+'</div><div><span class="contrib-item-coords">'+Utils.formatCoords(co[1],co[0],4)+'</span><button class="btn btn-small" onclick="window.UIManager.removeContribution(\''+p._id+'\')" title="Remove">&times;</button></div></li>'; }).join('');
   },
 
   removeContribution(id) { window.LayerManager?.removeContribution(id); this.updateContributionsList(); },
@@ -114,13 +114,18 @@ const UIManager = { panels:{}, buttons:{}, filterSelects:{}, activePanel:null, f
 
   saveContributions() {
     const g=window.LayerManager?.getContributionsGeoJSON();
-    if(g&&g.features.length>0){ const fn=`wom_contributions_${new Date().toISOString().split('T')[0]}.geojson`; Utils.downloadFile(JSON.stringify(g,null,2),fn); Utils.showToast(`Saved ${g.features.length} contributions`,'success'); }
+    if(g&&g.features.length>0){ 
+      const date = new Date().toISOString().split('T')[0];
+      const fn='wom_contributions_'+date+'.geojson'; 
+      Utils.downloadFile(JSON.stringify(g,null,2),fn); 
+      Utils.showToast('Saved '+g.features.length+' contributions','success'); 
+    }
     else Utils.showToast('No contributions to save','info');
   },
 
   async loadContributionsFile(e) {
     const f=e.target.files[0]; if(!f) return;
-    try{ const g=await Utils.parseGeoJSONFile(f); window.LayerManager?.loadContributions(g); this.updateContributionsList(); Utils.showToast(`Loaded ${g.features.length} contributions`,'success'); }
+    try{ const g=await Utils.parseGeoJSONFile(f); window.LayerManager?.loadContributions(g); this.updateContributionsList(); Utils.showToast('Loaded '+g.features.length+' contributions','success'); }
     catch(err){ console.error(err); Utils.showToast('Failed: '+err.message,'error'); }
     e.target.value='';
   },
@@ -130,9 +135,9 @@ const UIManager = { panels:{}, buttons:{}, filterSelects:{}, activePanel:null, f
   showFeatureInfo(f,id) {
     const p=document.getElementById('feature-info'), c=document.querySelector('.feature-info-content'); if(!p||!c) return;
     const pr=f.properties, co=f.geometry.coordinates, lat=co[1], lng=co[0];
-    let h=`<h4>${pr.name||pr.ID||pr.id||'Unnamed Structure'}</h4><div class="meta">Layer: ${id} | ${Utils.formatCoords(lat,lng,6)}</div><div class="props">`;
+    let h='<h4>'+(pr.name||pr.ID||pr.id||'Unnamed Structure')+'</h4><div class="meta">Layer: '+id+' | '+Utils.formatCoords(lat,lng,6)+'</div><div class="props">';
     const skip=['_layer','_source_layer','_id','_osm_id','_osm_type','FID'];
-    for(const [k,v] of Object.entries(pr)){ if(skip.includes(k)||v===null||v===undefined||v==='') continue; const l=k.replace(/_/g,' ').replace(/\b\w/g,x=>x.toUpperCase()); h+=`<div><span class="prop-label">${l}:</span><span class="prop-value">${v}</span></div>`; }
+    for(const [k,v] of Object.entries(pr)){ if(skip.includes(k)||v===null||v===undefined||v==='') continue; const l=k.replace(/_/g,' ').replace(/\b\w/g,x=>x.toUpperCase()); h+='<div><span class="prop-label">'+l+':</span><span class="prop-value">'+v+'</span></div>'; }
     h+='</div>'; c.innerHTML=h; p.hidden=false; this.featureInfoVisible=true;
   },
 
