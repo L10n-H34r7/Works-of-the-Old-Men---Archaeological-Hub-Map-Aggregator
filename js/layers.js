@@ -3,6 +3,7 @@
 const LayerManager = {
   map: null, layers: {}, layerGroups: {}, visibleLayers: new Set(),
   filters: { type: 'all', region: 'all' }, featureCache: new Map(),
+  loadingTimeouts: new Map(),
 
   layerDefinitions: {
     globalkites: {
@@ -40,7 +41,8 @@ const LayerManager = {
       const l = document.createElement('label'); l.className = 'layer-option';
       l.innerHTML = `<input type="checkbox" id="layer-${d.id}" value="${d.id}" ${d.default?'checked':''}><span class="option-label">${d.name}</span>`;
       c.appendChild(l);
-      l.querySelector('input').addEventListener('change', e => this.toggleLayer(d.id, e.target.checked));
+      const input = l.querySelector('input');
+      if (input) input.addEventListener('change', e => this.toggleLayer(d.id, e.target.checked));
       if (d.default) this.visibleLayers.add(d.id);
     });
     ['eamena','pleiades','osm-arch'].forEach(id => {
@@ -50,19 +52,39 @@ const LayerManager = {
   },
 
   async loadInitialLayers() {
-    for (const d of this.layerDefinitions.globalkites.sublayers) if (d.default) await this.loadLayer(d.id);
+    for (const d of this.layerDefinitions.globalkites.sublayers) {
+      if (d.default) {
+        try { await this.loadLayer(d.id); }
+        catch (e) { console.warn(`Failed to load initial layer ${d.id}:`, e); }
+      }
+    }
     this.updateFeatureCounts();
   },
 
   async toggleLayer(id, vis) {
-    if (vis) { this.visibleLayers.add(id); await this.loadLayer(id); this.map.addLayer(this.layerGroups[id]); }
-    else { this.visibleLayers.delete(id); this.map.removeLayer(this.layerGroups[id]); }
+    const checkbox = document.getElementById(`layer-${id}`);
+    if (vis) {
+      this.visibleLayers.add(id);
+      try { await this.loadLayer(id); this.map.addLayer(this.layerGroups[id]); }
+      catch (e) { 
+        console.error(`Failed to load layer ${id}:`, e);
+        Utils.showToast(`Failed to load ${id}: ${e.message}`, 'error');
+        if (checkbox) checkbox.checked = false;
+        this.visibleLayers.delete(id);
+      }
+    } else {
+      this.visibleLayers.delete(id);
+      this.map.removeLayer(this.layerGroups[id]);
+    }
     this.updateFeatureCounts(); this.applyFilters();
   },
 
   async loadLayer(id) {
-    if (this.layerGroups[id]._loaded) return;
+    if (this.layerGroups[id]?._loaded) return;
     this.showLoading(`Loading ${id}...`);
+    // Auto-hide loading after 15 seconds
+    const timeout = setTimeout(() => this.hideLoading(), 15000);
+    this.loadingTimeouts.set(id, timeout);
     try {
       let g;
       if (id === 'eamena') g = await this.loadEAMENA();
@@ -71,13 +93,26 @@ const LayerManager = {
       else {
         const def = this.layerDefinitions.globalkites.sublayers.find(d => d.id === id);
         if (def) g = await this.loadLocalGeoJSON(def.file);
+        else throw new Error(`Unknown layer: ${id}`);
       }
       if (g && g.features) { this.renderGeoJSON(id, g); this.layerGroups[id]._loaded = true; this.layerGroups[id]._geojson = g; }
-    } catch (e) { console.error(`Failed to load ${id}:`, e); Utils.showToast(`Failed to load ${id}`, 'error'); }
-    finally { this.hideLoading(); }
+      else throw new Error('No features in GeoJSON');
+    } catch (e) {
+      console.error(`Failed to load layer ${id}:`, e);
+      Utils.showToast(`Failed to load ${id}: ${e.message}`, 'error');
+      throw e;
+    } finally { 
+      clearTimeout(this.loadingTimeouts.get(id));
+      this.loadingTimeouts.delete(id);
+      this.hideLoading(); 
+    }
   },
 
-  async loadLocalGeoJSON(url) { const r = await fetch(url); if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); },
+  async loadLocalGeoJSON(url) { 
+    const r = await fetch(url); 
+    if (!r.ok) throw new Error(`HTTP ${r.status}: ${r.statusText}`); 
+    return r.json(); 
+  },
 
   async loadEAMENA() {
     const b = this.map.getBounds();
@@ -160,29 +195,29 @@ const LayerManager = {
   setFilter(n,v){ this.filters[n]=v; this.applyFilters(); },
 
   updateFeatureCounts() {
-    let gk=0; this.layerDefinitions.globalkites.sublayers.forEach(d=>{ if(this.visibleLayers.has(d.id)&&this.layerGroups[d.id]._loaded) gk+=this.layerGroups[d.id].getLayers().length; });
+    let gk=0; this.layerDefinitions.globalkites.sublayers.forEach(d=>{ if(this.visibleLayers.has(d.id)&&this.layerGroups[d.id]?._loaded) gk+=this.layerGroups[d.id].getLayers().length; });
     const ge=document.getElementById('count-globalkites'); if(ge) ge.textContent=Utils.formatNumber(gk);
-    const cc=this.layerGroups.contributions.getLayers().length; const ce=document.getElementById('count-contributions'); if(ce) ce.textContent=Utils.formatNumber(cc);
+    const cc=this.layerGroups.contributions?.getLayers().length || 0; const ce=document.getElementById('count-contributions'); if(ce) ce.textContent=Utils.formatNumber(cc);
     this.updateExportLayerList();
   },
 
   updateExportLayerList() {
     const c=document.getElementById('export-layer-list'); if(!c) return; c.innerHTML='';
-    this.layerDefinitions.globalkites.sublayers.forEach(d=>{ if(this.layerGroups[d.id]._loaded){ const n=this.layerGroups[d.id].getLayers().length; if(n>0){ const b=document.createElement('button'); b.className='btn btn-small'; b.style.justifyContent='space-between'; b.innerHTML=`<span>${d.name}</span><span>${Utils.formatNumber(n)} features</span>`; b.onclick=()=>this.exportLayer(d.id); c.appendChild(b); } } });
-    ['eamena','pleiades','osm-arch'].forEach(id=>{ if(this.layerGroups[id]._loaded){ const n=this.layerGroups[id].getLayers().length; if(n>0){ const d=this.layerDefinitions[id]; const b=document.createElement('button'); b.className='btn btn-small'; b.style.justifyContent='space-between'; b.innerHTML=`<span>${d.name}</span><span>${Utils.formatNumber(n)} features</span>`; b.onclick=()=>this.exportLayer(id); c.appendChild(b); } } });
-    const cn=this.layerGroups.contributions.getLayers().length; if(cn>0){ const b=document.createElement('button'); b.className='btn btn-small'; b.style.justifyContent='space-between'; b.innerHTML=`<span>My Contributions</span><span>${Utils.formatNumber(cn)} features</span>`; b.onclick=()=>this.exportLayer('contributions'); c.appendChild(b); }
+    this.layerDefinitions.globalkites.sublayers.forEach(d=>{ if(this.layerGroups[d.id]?._loaded){ const n=this.layerGroups[d.id].getLayers().length; if(n>0){ const b=document.createElement('button'); b.className='btn btn-small'; b.style.justifyContent='space-between'; b.innerHTML=`<span>${d.name}</span><span>${Utils.formatNumber(n)} features</span>`; b.onclick=()=>this.exportLayer(d.id); c.appendChild(b); } } });
+    ['eamena','pleiades','osm-arch'].forEach(id=>{ if(this.layerGroups[id]?._loaded){ const n=this.layerGroups[id].getLayers().length; if(n>0){ const d=this.layerDefinitions[id]; const b=document.createElement('button'); b.className='btn btn-small'; b.style.justifyContent='space-between'; b.innerHTML=`<span>${d.name}</span><span>${Utils.formatNumber(n)} features</span>`; b.onclick=()=>this.exportLayer(id); c.appendChild(b); } } });
+    const cn=this.layerGroups.contributions?.getLayers().length || 0; if(cn>0){ const b=document.createElement('button'); b.className='btn btn-small'; b.style.justifyContent='space-between'; b.innerHTML=`<span>My Contributions</span><span>${Utils.formatNumber(cn)} features</span>`; b.onclick=()=>this.exportLayer('contributions'); c.appendChild(b); }
   },
 
   exportLayer(id) {
-    const f=[]; this.layerGroups[id].eachLayer(l=>{ const s=L.stamp(l); const c=this.featureCache.get(s); if(c&&c.feature) f.push(c.feature); });
+    const f=[]; this.layerGroups[id]?.eachLayer(l=>{ const s=L.stamp(l); const c=this.featureCache.get(s); if(c&&c.feature) f.push(c.feature); });
     const g={type:'FeatureCollection',features:f}; const fn=`wom_${id}_${new Date().toISOString().split('T')[0]}.geojson`; Utils.downloadFile(JSON.stringify(g,null,2),fn); Utils.showToast(`Exported ${f.length} features`,'success');
   },
 
   exportAll(o={}) {
     const f=[];
-    if(o.globalkites) this.layerDefinitions.globalkites.sublayers.forEach(d=>{ if(this.visibleLayers.has(d.id)&&this.layerGroups[d.id]._loaded) this.layerGroups[d.id].eachLayer(l=>{ const s=L.stamp(l); const c=this.featureCache.get(s); if(c&&c.feature) f.push(c.feature); }); });
-    if(o.contributions) this.layerGroups.contributions.eachLayer(l=>{ const s=L.stamp(l); const c=this.featureCache.get(s); if(c&&c.feature) f.push(c.feature); });
-    if(o.external) ['eamena','pleiades','osm-arch'].forEach(id=>{ if(this.visibleLayers.has(id)&&this.layerGroups[id]._loaded) this.layerGroups[id].eachLayer(l=>{ const s=L.stamp(l); const c=this.featureCache.get(s); if(c&&c.feature) f.push(c.feature); }); });
+    if(o.globalkites) this.layerDefinitions.globalkites.sublayers.forEach(d=>{ if(this.visibleLayers.has(d.id)&&this.layerGroups[d.id]?._loaded) this.layerGroups[d.id].eachLayer(l=>{ const s=L.stamp(l); const c=this.featureCache.get(s); if(c&&c.feature) f.push(c.feature); }); });
+    if(o.contributions) this.layerGroups.contributions?.eachLayer(l=>{ const s=L.stamp(l); const c=this.featureCache.get(s); if(c&&c.feature) f.push(c.feature); });
+    if(o.external) ['eamena','pleiades','osm-arch'].forEach(id=>{ if(this.visibleLayers.has(id)&&this.layerGroups[id]?._loaded) this.layerGroups[id].eachLayer(l=>{ const s=L.stamp(l); const c=this.featureCache.get(s); if(c&&c.feature) f.push(c.feature); }); });
     const g={type:'FeatureCollection',features:f}; const fn=`wom_combined_${new Date().toISOString().split('T')[0]}.geojson`; Utils.downloadFile(JSON.stringify(g,null,2),fn); Utils.showToast(`Exported ${f.length} features`,'success');
   },
 
@@ -208,13 +243,13 @@ const LayerManager = {
   },
 
   removeContribution(id) {
-    let rem=false; this.layerGroups.contributions.eachLayer(l=>{ const s=L.stamp(l); const c=this.featureCache.get(s); if(c&&c.feature.properties._id===id){ this.layerGroups.contributions.removeLayer(l); this.featureCache.delete(s); rem=true; } });
+    let rem=false; this.layerGroups.contributions?.eachLayer(l=>{ const s=L.stamp(l); const c=this.featureCache.get(s); if(c&&c.feature.properties._id===id){ this.layerGroups.contributions.removeLayer(l); this.featureCache.delete(s); rem=true; } });
     if(rem) this.updateFeatureCounts(); return rem;
   },
 
-  clearContributions() { this.layerGroups.contributions.clearLayers(); this.featureCache.forEach((v,k)=>{ if(v.layerId==='contributions') this.featureCache.delete(k); }); this.updateFeatureCounts(); },
+  clearContributions() { this.layerGroups.contributions?.clearLayers(); this.featureCache.forEach((v,k)=>{ if(v.layerId==='contributions') this.featureCache.delete(k); }); this.updateFeatureCounts(); },
 
-  getContributionsGeoJSON() { const f=[]; this.layerGroups.contributions.eachLayer(l=>{ const s=L.stamp(l); const c=this.featureCache.get(s); if(c&&c.feature) f.push(c.feature); }); return {type:'FeatureCollection',features:f}; },
+  getContributionsGeoJSON() { const f=[]; this.layerGroups.contributions?.eachLayer(l=>{ const s=L.stamp(l); const c=this.featureCache.get(s); if(c&&c.feature) f.push(c.feature); }); return {type:'FeatureCollection',features:f}; },
 
   loadContributions(g) { this.clearContributions(); if(g&&g.features) g.features.forEach(f=>this.addContribution(f)); },
 
