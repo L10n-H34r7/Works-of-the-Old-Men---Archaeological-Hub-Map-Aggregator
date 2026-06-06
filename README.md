@@ -1,6 +1,6 @@
 # Works of the Old Men - Archaeological Hub & Map Aggregator
 
-A neat, open-source, simply navigated website serving as the central reference hub for "The Works of the Old Men"—the ancient pre-Islamic stone geoglyphs and living structures found across the Arabian Peninsula (from North to South) extending across the Red Sea into East Africa (Djibouti and Ethiopia).
+A WIP vibecoded (neat), open-source, simply navigated website serving as the central reference hub for "The Works of the Old Men"—the ancient pre-Islamic stone geoglyphs and living structures found across the Arabian Peninsula (from North to South) extending across the Red Sea into East Africa and more archeological discovery.
 
 ## Features
 
@@ -18,7 +18,7 @@ A neat, open-source, simply navigated website serving as the central reference h
 | Dataset | Source | Features | License |
 |---------|--------|----------|---------|
 | **GlobalKites** | [Zenodo](https://doi.org/10.5281/zenodo.14844953) | 6,721+ desert kites | CC BY 4.0 |
-| **EAMENA** | [EAMENA Database](https://database.eamena.org/) | Heritage places across MENA | Open Access |
+| **EAMENA** | [EAMENA Database](https://database.eamena.org/) | Heritage places across MENA | Open Access | https://zenodo.org/communities/eamena/records?q=&l=list&p=1&s=10&sort=newest
 | **Pleiades** | [Pleiades Gazetteer](https://pleiades.stoa.org/) | 31,000+ ancient places | CC BY 3.0 |
 | **OpenStreetMap** | Overpass API | Archaeological sites tagged in OSM | ODbL |
 
