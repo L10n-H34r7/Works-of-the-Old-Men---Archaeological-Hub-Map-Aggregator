@@ -22,9 +22,8 @@ The information and maps are scattered around the idea is to have them all in on
 | Dataset | Source | Features | License |
 |---------|--------|----------|---------|
 | **GlobalKites** | [Zenodo](https://doi.org/10.5281/zenodo.14844953) | 6,721+ desert kites | CC BY 4.0 |
-| **EAMENA** | [EAMENA Database](https://database.eamena.org/) | Heritage places across MENA | Open Access | https://zenodo.org/communities/eamena/records?q=&l=list&p=1&s=10&sort=newest
-| **Pleiades** | [Pleiades Gazetteer](https://pleiades.stoa.org/) | 31,000+ ancient places | CC BY 3.0 |
-| **OpenStreetMap** | Overpass API | Archaeological sites tagged in OSM | ODbL |
+| **EAMENA** | [EAMENA Database](https://zenodo.org/communities/eamena/records?q=&l=list&p=1&s=10&sort=newest) | Heritage places across MENA | Open Access | https://zenodo.org/communities/eamena/records?q=&l=list&p=1&s=10&sort=newest
+
 
 ## Structure Types (GlobalKites)
 
