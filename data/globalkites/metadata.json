@@ -1,0 +1,51 @@
+{
+  "dataset": "GlobalKites",
+  "source": "Zenodo: https://doi.org/10.5281/zenodo.14844953",
+  "license": "CC BY 4.0",
+  "citation": "Barge, O., R\u00e9gagnon, E., Abu-Azizeh, W., Bouzid, S., Brochier, J., & Crassard, R. (2024). Desert kites and related constructions. Zenodo. https://doi.org/10.5281/zenodo.14844953",
+  "layers": [
+    {
+      "id": "kites",
+      "name": "GlobalKites - All Kites",
+      "file": "kites.geojson",
+      "feature_count": 6721,
+      "geometry_type": "Point"
+    },
+    {
+      "id": "openkites",
+      "name": "GlobalKites - Open Kites",
+      "file": "openkites.geojson",
+      "feature_count": 862,
+      "geometry_type": "Point"
+    },
+    {
+      "id": "sample610",
+      "name": "GlobalKites - Sample 610",
+      "file": "sample610.geojson",
+      "feature_count": 610,
+      "geometry_type": "Point"
+    },
+    {
+      "id": "vshaped",
+      "name": "GlobalKites - V-Shaped",
+      "file": "vshaped.geojson",
+      "feature_count": 64,
+      "geometry_type": "Point"
+    },
+    {
+      "id": "crescents",
+      "name": "GlobalKites - Crescents",
+      "file": "crescents.geojson",
+      "feature_count": 241,
+      "geometry_type": "Point"
+    },
+    {
+      "id": "rings",
+      "name": "GlobalKites - Rings",
+      "file": "rings.geojson",
+      "feature_count": 62,
+      "geometry_type": "Point"
+    }
+  ],
+  "total_features": 8560
+}
