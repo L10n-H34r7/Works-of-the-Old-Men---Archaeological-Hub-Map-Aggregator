@@ -2,7 +2,7 @@
 
 https://l10n-h34r7.github.io/Works-of-the-Old-Men---Archaeological-Hub-Map-Aggregator/
 
-A WIP vibecoded (neat), open-source, simply navigated website serving as the central reference hub for "The Works of the Old Men"—the ancient pre-Islamic stone geoglyphs and living structures found across the Arabian Peninsula (from North to South) extending across the Red Sea into East Africa and more archeological discovery.
+A WIP vibecoded, open-source, simply navigated website serving as the central reference hub for "The Works of the Old Men"—the ancient pre-Islamic stone geoglyphs and living structures found across the Arabian Peninsula (from North to South) extending across the Red Sea into East Africa and more archeological discovery.
 
 The information and maps are scattered around the idea is to have them all in one place and foreverybody to get involved.
 
