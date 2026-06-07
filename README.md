@@ -9,6 +9,9 @@ The information and maps are scattered around the idea is to have them all in on
 Ideas : implement a layer of sites that where excavated and documented with links to papers and videos documentaries
 Include get involved section.
 
+WIP : 
+To add a new dataset in the future: just drop the GeoJSON in data/yourfolder/ and add one entry to datasets.json — it appears automatically on next load. No code changes needed.
+
 
 ## Features
 
