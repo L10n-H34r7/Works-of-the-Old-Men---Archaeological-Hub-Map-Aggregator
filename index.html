@@ -20,95 +20,22 @@
     <p class="app-subtitle">Archaeological Hub &amp; Map Aggregator for Ancient Arabian Stone Structures</p>
   </div>
   <nav class="header-nav" aria-label="Main navigation">
-    <button class="nav-btn" id="btn-about" aria-expanded="false" aria-controls="panel-about">About</button>
-    <button class="nav-btn" id="btn-layers" aria-expanded="true" aria-controls="panel-layers">Layers</button>
-    <button class="nav-btn" id="btn-zenodo" aria-expanded="false" aria-controls="panel-zenodo">Add Data</button>
-    <button class="nav-btn" id="btn-contribute" aria-expanded="false" aria-controls="panel-contribute">Contribute</button>
-    <button class="nav-btn" id="btn-export" aria-expanded="false" aria-controls="panel-export">Export</button>
+    <button class="nav-btn" id="btn-about" aria-expanded="false">About</button>
+    <button class="nav-btn active" id="btn-layers" aria-expanded="true">Layers</button>
+    <button class="nav-btn" id="btn-tools" aria-expanded="false">Tools</button>
   </nav>
 </header>
 
 <main class="app-main">
   <div id="map" class="map-container" role="application" aria-label="Interactive map of Works of the Old Men"></div>
 
-  <!-- LAYERS PANEL -->
-  <aside class="side-panel" id="panel-layers" role="region" aria-label="Map Layers" aria-expanded="true">
-    <div class="panel-header">
-      <h2>Map Layers</h2>
-      <button class="panel-close" id="close-layers" aria-label="Close layers panel">&times;</button>
-    </div>
-    <div class="panel-content">
-
-      <section class="layer-section">
-        <h3>Base Maps</h3>
-        <div class="base-map-options" role="radiogroup" aria-label="Base map selection">
-          <label class="base-map-option">
-            <input type="radio" name="basemap" value="satellite" checked>
-            <span class="option-label">Esri World Imagery</span>
-          </label>
-          <label class="base-map-option">
-            <input type="radio" name="basemap" value="hybrid">
-            <span class="option-label">Esri Hybrid (Satellite + Labels)</span>
-          </label>
-          <label class="base-map-option">
-            <input type="radio" name="basemap" value="esri-topo">
-            <span class="option-label">Esri World Topo</span>
-          </label>
-          <label class="base-map-option">
-            <input type="radio" name="basemap" value="google-sat">
-            <span class="option-label">Google Satellite</span>
-          </label>
-          <label class="base-map-option">
-            <input type="radio" name="basemap" value="google-hybrid">
-            <span class="option-label">Google Hybrid (Satellite + Roads)</span>
-          </label>
-          <label class="base-map-option">
-            <input type="radio" name="basemap" value="bing-sat">
-            <span class="option-label">Bing Aerial</span>
-          </label>
-        </div>
-      </section>
-
-      <section class="layer-section">
-        <h3>GlobalKites Dataset <span class="feature-count" id="count-globalkites">0</span></h3>
-        <p class="layer-attribution">Source: <a href="https://doi.org/10.5281/zenodo.14844953" target="_blank" rel="noopener">Barge et al. (2024)</a> | CC BY 4.0 | 6,721+ kites</p>
-        <div class="layer-toggles" id="globalkites-toggles"></div>
-        <div class="layer-filters">
-          <label for="filter-type">Filter by Type:</label>
-          <select id="filter-type" class="filter-select">
-            <option value="all">All Types</option>
-          </select>
-          <label for="filter-region">Filter by Region:</label>
-          <select id="filter-region" class="filter-select">
-            <option value="all">All Regions</option>
-          </select>
-        </div>
-      </section>
-
-      <!-- ZENODO LOCAL LAYERS (will be populated dynamically) -->
-      <section class="layer-section" id="section-zenodo-layers" style="display:none;">
-        <h3>Zenodo Datasets <span class="feature-count" id="count-zenodo">0</span></h3>
-        <div class="layer-toggles" id="zenodo-layer-toggles"></div>
-      </section>
-
-      <section class="layer-section">
-        <h3>My Contributions <span class="feature-count" id="count-contributions">0</span></h3>
-        <div class="contribution-controls">
-          <button class="btn btn-small" id="btn-clear-contrib" title="Clear all contributions">Clear All</button>
-          <button class="btn btn-small btn-primary" id="btn-save-contrib" title="Save contributions to file">Save to File</button>
-          <input type="file" id="input-load-contrib" accept=".geojson,.json" hidden title="Load contributions from file">
-          <button class="btn btn-small" id="btn-load-contrib" title="Load contributions from file">Load from File</button>
-        </div>
-      </section>
-
-    </div>
-  </aside>
-
-  <!-- ABOUT PANEL -->
-  <aside class="side-panel" id="panel-about" role="region" aria-label="About" aria-expanded="false" hidden>
+  <!-- ═══════════════════════════════════════════════
+       ABOUT PANEL
+  ════════════════════════════════════════════════ -->
+  <aside class="side-panel" id="panel-about" role="region" aria-label="About" hidden>
     <div class="panel-header">
       <h2>About This Project</h2>
-      <button class="panel-close" id="close-about" aria-label="Close about panel">&times;</button>
+      <button class="panel-close" data-close="about" aria-label="Close">&times;</button>
     </div>
     <div class="panel-content">
       <article class="about-content">
@@ -123,205 +50,303 @@
           <li><strong>Meandering Walls</strong> — Long, sinuous stone walls</li>
           <li><strong>Cairns &amp; Tombs</strong> — Burial structures of various forms</li>
         </ul>
-        <h3>Data Sources Aggregated Here</h3>
+
+        <h3>Data Sources</h3>
         <ul class="source-list">
-          <li><strong>GlobalKites Project</strong> (CNRS/Université Lyon 2) — 6,721+ desert kites across Arabia, Levant, Central Asia <a href="https://doi.org/10.5281/zenodo.14844953" target="_blank" rel="noopener">[Zenodo]</a></li>
-          <li><strong>EAMENA Community</strong> (Oxford/Leicester/Durham) — Endangered archaeology datasets across 20+ MENA countries <a href="https://zenodo.org/communities/eamena/" target="_blank" rel="noopener">[Zenodo Community]</a></li>
-          <li><strong>Wasfy Mustatils Complex</strong> — Mustatil &amp; pendant structures in Central Arabia <a href="https://zenodo.org/records/20157963" target="_blank" rel="noopener">[Zenodo]</a></li>
-          <li><strong>Western Nafud Survey</strong> — Archaeological landscapes of NW Saudi Arabia <a href="https://zenodo.org/records/16992682" target="_blank" rel="noopener">[Zenodo]</a></li>
+          <li><strong>GlobalKites Project</strong> (CNRS/Université Lyon 2) — 6,721+ desert kites <a href="https://doi.org/10.5281/zenodo.14844953" target="_blank" rel="noopener">[Zenodo]</a></li>
+          <li><strong>EAMENA Community</strong> (Oxford/Leicester/Durham) — Endangered archaeology across MENA <a href="https://zenodo.org/communities/eamena/" target="_blank" rel="noopener">[Zenodo]</a></li>
+          <li><strong>Wasfy Mustatils Complex</strong> — Mustatil &amp; pendant structures, Central Arabia <a href="https://zenodo.org/records/20157963" target="_blank" rel="noopener">[Zenodo]</a></li>
+          <li><strong>Western Nafud Survey</strong> — NW Saudi Arabia &amp; SE Jordan <a href="https://zenodo.org/records/16992682" target="_blank" rel="noopener">[Zenodo]</a></li>
         </ul>
+
         <h3>Purpose</h3>
-        <p>This hub aggregates dispersed datasets into a single, unified map for researchers, heritage professionals, and enthusiasts. All exploration happens here—no external redirects. Use the <strong>Add Data</strong> tab to import Zenodo GeoJSON datasets directly into the map.</p>
+        <p>This hub aggregates dispersed datasets onto one unified map for researchers, heritage professionals, and enthusiasts. Use the <strong>Layers</strong> panel to toggle datasets and the <strong>Tools</strong> panel to import new data, mark structures, or export.</p>
+
         <h3>License &amp; Attribution</h3>
-        <p>This application is open source (MIT License). Data layers retain their original licenses (CC BY 4.0 for GlobalKites). Please cite original sources when using data.</p>
+        <p>Open source (MIT License). Data layers retain original licenses (CC BY 4.0 for GlobalKites).</p>
+        <p style="margin-top:8px;">Basemaps: <a href="https://www.esri.com/en-us/arcgis/products/arcgis-world-imagery/overview" target="_blank" rel="noopener">Esri World Imagery</a> | Built with <a href="https://leafletjs.com/" target="_blank" rel="noopener">Leaflet</a></p>
+        <p style="margin-top:8px;"><a href="https://github.com/L10n-H34r7/Works-of-the-Old-Men---Archaeological-Hub-Map-Aggregator" target="_blank" rel="noopener">📂 View Source on GitHub</a></p>
       </article>
     </div>
   </aside>
 
-  <!-- ADD DATA (ZENODO) PANEL -->
-  <aside class="side-panel" id="panel-zenodo" role="region" aria-label="Add Zenodo Data" aria-expanded="false" hidden>
+  <!-- ═══════════════════════════════════════════════
+       LAYERS PANEL
+  ════════════════════════════════════════════════ -->
+  <aside class="side-panel" id="panel-layers" role="region" aria-label="Map Layers">
     <div class="panel-header">
-      <h2>Add Zenodo Data</h2>
-      <button class="panel-close" id="close-zenodo" aria-label="Close add data panel">&times;</button>
+      <h2>Map Layers</h2>
+      <button class="panel-close" data-close="layers" aria-label="Close">&times;</button>
     </div>
     <div class="panel-content">
 
-      <div class="zenodo-intro">
-        <p>Load GeoJSON datasets directly from <a href="https://zenodo.org/communities/eamena/records?q=&l=list&p=1&s=10&sort=newest" target="_blank" rel="noopener">EAMENA Zenodo community</a> or any Zenodo record. Paste a direct GeoJSON file URL or upload a local file.</p>
-      </div>
-
-      <!-- Quick-load: curated Zenodo records -->
+      <!-- BASE MAPS collapsible -->
       <section class="layer-section">
-        <h3>Featured Zenodo Datasets</h3>
-        <div class="zenodo-featured" id="zenodo-featured">
-
-          <div class="zenodo-card">
-            <div class="zenodo-card-title">Wasfy Mustatils Complex</div>
-            <div class="zenodo-card-desc">Mustatils, Pendants &amp; Cairns — Central Arabia (Saudi Arabia). Wasfy, Tarek (2026).</div>
-            <div class="zenodo-card-actions">
-              <button class="btn btn-small btn-primary" data-zenodo-url="https://zenodo.org/records/20157963/files/AllMustatilsFINALFINAL.geojson?download=1" data-layer-name="Wasfy Mustatils (All)" data-layer-color="#e67e22">
-                Load AllMustatils GeoJSON
-              </button>
-              <button class="btn btn-small" data-zenodo-url="https://zenodo.org/records/20157963/files/mustatil_orte_erweitert.geojson?download=1" data-layer-name="Mustatil Sites Extended" data-layer-color="#f39c12">
-                Load Extended GeoJSON
-              </button>
-              <a class="btn btn-small" href="https://zenodo.org/records/20157963" target="_blank" rel="noopener">View on Zenodo ↗</a>
-            </div>
+        <button class="collapsible-header" id="toggle-basemaps" aria-expanded="false">
+          <span>Base Maps</span>
+          <span class="collapse-arrow">▶</span>
+        </button>
+        <div class="collapsible-body" id="body-basemaps" style="display:none;">
+          <div class="base-map-options" role="radiogroup">
+            <label class="base-map-option">
+              <input type="radio" name="basemap" value="satellite" checked>
+              <span class="option-label">🛰 Esri World Imagery</span>
+            </label>
+            <label class="base-map-option">
+              <input type="radio" name="basemap" value="hybrid">
+              <span class="option-label">🛰 Esri Hybrid (Satellite + Labels)</span>
+            </label>
+            <label class="base-map-option">
+              <input type="radio" name="basemap" value="google-sat">
+              <span class="option-label">🛰 Google Satellite</span>
+            </label>
+            <label class="base-map-option">
+              <input type="radio" name="basemap" value="google-hybrid">
+              <span class="option-label">🛰 Google Hybrid (Satellite + Roads)</span>
+            </label>
           </div>
-
-          <div class="zenodo-card">
-            <div class="zenodo-card-title">Western Nafud Archaeological Survey</div>
-            <div class="zenodo-card-desc">Remote sensing survey — NW Saudi Arabia &amp; SE Jordan. Fradley, Michael / EAMENA (2025).</div>
-            <div class="zenodo-card-actions">
-              <span class="zenodo-note">⚠ Files in ZIP archive — download from Zenodo, extract, then use URL loader or file upload below.</span>
-              <a class="btn btn-small" href="https://zenodo.org/records/16992682" target="_blank" rel="noopener">View on Zenodo ↗</a>
-            </div>
-          </div>
-
-          <div class="zenodo-card">
-            <div class="zenodo-card-title">EAMENA Community (Browse All)</div>
-            <div class="zenodo-card-desc">Explore all EAMENA datasets on Zenodo. Find GeoJSON files and paste the download URL below.</div>
-            <div class="zenodo-card-actions">
-              <a class="btn btn-small btn-primary" href="https://zenodo.org/communities/eamena/records?q=&l=list&p=1&s=10&sort=newest" target="_blank" rel="noopener">Browse EAMENA Zenodo ↗</a>
-            </div>
-          </div>
-
         </div>
       </section>
 
-      <!-- Manual URL loader -->
+      <!-- DATASETS tree -->
       <section class="layer-section">
-        <h3>Load from URL</h3>
-        <p class="layer-attribution">Paste a direct GeoJSON file URL (must be CORS-accessible, e.g. raw Zenodo download links).</p>
-        <div class="zenodo-url-form">
-          <div class="form-group">
-            <label for="zenodo-url-input">GeoJSON URL</label>
-            <input type="url" id="zenodo-url-input" class="form-input" placeholder="https://zenodo.org/records/.../files/data.geojson?download=1">
+        <div class="section-title">Datasets</div>
+
+        <!-- GlobalKites -->
+        <div class="dataset-group">
+          <button class="dataset-header" id="toggle-globalkites" aria-expanded="false">
+            <span class="dataset-arrow">▶</span>
+            <span class="dataset-name">GlobalKites</span>
+            <span class="feature-count" id="count-globalkites">0</span>
+          </button>
+          <div class="dataset-body" id="body-globalkites" style="display:none;">
+            <p class="layer-attribution" style="padding:6px 8px 4px 24px;">
+              <a href="https://doi.org/10.5281/zenodo.14844953" target="_blank" rel="noopener">Barge et al. (2024)</a> · CC BY 4.0 · 6,721+ kites
+            </p>
+            <div id="globalkites-toggles" class="sublayer-list"></div>
           </div>
-          <div class="form-group">
-            <label for="zenodo-layer-name-url">Layer Name</label>
-            <input type="text" id="zenodo-layer-name-url" class="form-input" placeholder="e.g. EAMENA Sites Jordan">
-          </div>
-          <div class="form-group">
-            <label for="zenodo-layer-color-url">Marker Color</label>
-            <input type="color" id="zenodo-layer-color-url" value="#27ae60" style="width:60px;height:34px;padding:2px;border:1px solid var(--color-border);border-radius:4px;cursor:pointer;">
-          </div>
-          <button class="btn btn-primary" id="btn-load-zenodo-url">Load from URL</button>
         </div>
+
+        <!-- Imported datasets will be injected here -->
+        <div id="imported-datasets"></div>
+
       </section>
 
-      <!-- File upload loader -->
+      <!-- MY CONTRIBUTIONS count + controls -->
       <section class="layer-section">
-        <h3>Upload Local GeoJSON File</h3>
-        <p class="layer-attribution">Upload a GeoJSON file you've downloaded from Zenodo or elsewhere.</p>
-        <div class="zenodo-url-form">
-          <div class="form-group">
-            <label for="zenodo-file-input">GeoJSON / JSON File</label>
-            <input type="file" id="zenodo-file-input" accept=".geojson,.json" class="form-input">
-          </div>
-          <div class="form-group">
-            <label for="zenodo-layer-name-file">Layer Name</label>
-            <input type="text" id="zenodo-layer-name-file" class="form-input" placeholder="e.g. My Dataset">
-          </div>
-          <div class="form-group">
-            <label for="zenodo-layer-color-file">Marker Color</label>
-            <input type="color" id="zenodo-layer-color-file" value="#2980b9" style="width:60px;height:34px;padding:2px;border:1px solid var(--color-border);border-radius:4px;cursor:pointer;">
-          </div>
-          <button class="btn btn-primary" id="btn-load-zenodo-file">Upload &amp; Add to Map</button>
+        <div class="section-title">
+          My Contributions <span class="feature-count" id="count-contributions">0</span>
         </div>
-      </section>
-
-      <!-- Loaded datasets list -->
-      <section class="layer-section" id="zenodo-loaded-section" style="display:none;">
-        <h3>Loaded Datasets</h3>
-        <div id="zenodo-loaded-list"></div>
+        <div class="contribution-controls" style="margin-top:8px;">
+          <button class="btn btn-small" id="btn-clear-contrib">Clear All</button>
+          <button class="btn btn-small btn-primary" id="btn-save-contrib">Save to File</button>
+          <input type="file" id="input-load-contrib" accept=".geojson,.json" hidden>
+          <button class="btn btn-small" id="btn-load-contrib">Load from File</button>
+        </div>
+        <ul id="contrib-items" style="margin-top:10px;list-style:none;"></ul>
       </section>
 
     </div>
   </aside>
 
-  <!-- CONTRIBUTE PANEL -->
-  <aside class="side-panel" id="panel-contribute" role="region" aria-label="Contribute" aria-expanded="false" hidden>
+  <!-- ═══════════════════════════════════════════════
+       TOOLS PANEL  (Add Data + Contribute + Export merged)
+  ════════════════════════════════════════════════ -->
+  <aside class="side-panel" id="panel-tools" role="region" aria-label="Tools" hidden>
     <div class="panel-header">
-      <h2>Contribute a Structure</h2>
-      <button class="panel-close" id="close-contribute" aria-label="Close contribute panel">&times;</button>
+      <h2>Tools</h2>
+      <button class="panel-close" data-close="tools" aria-label="Close">&times;</button>
     </div>
     <div class="panel-content">
-      <div id="contribute-status" class="contribute-status">
-        <p><strong>Instructions:</strong> Click "Start Adding" then click on the map to place a marker. Fill in the details and save.</p>
-        <button class="btn btn-primary" id="btn-start-contribute">Start Adding</button>
-        <ul id="contrib-items"></ul>
-      </div>
-    </div>
-  </aside>
 
-  <!-- EXPORT PANEL -->
-  <aside class="side-panel" id="panel-export" role="region" aria-label="Export" aria-expanded="false" hidden>
-    <div class="panel-header">
-      <h2>Export Data</h2>
-      <button class="panel-close" id="close-export" aria-label="Close export panel">&times;</button>
-    </div>
-    <div class="panel-content">
-      <section class="export-section">
-        <h3>Export Visible Layers</h3>
-        <p>Download currently visible features as GeoJSON.</p>
+      <!-- ── TAB BAR ── -->
+      <div class="tool-tabs">
+        <button class="tool-tab active" data-tab="tab-import">Import Data</button>
+        <button class="tool-tab" data-tab="tab-contribute">Mark Structure</button>
+        <button class="tool-tab" data-tab="tab-export">Export</button>
+      </div>
+
+      <!-- ── IMPORT TAB ── -->
+      <div class="tool-tab-body" id="tab-import">
+
+        <div class="zenodo-intro">
+          Upload a GeoJSON file or paste a direct download URL to add it as a new layer on the map.
+          Browse <a href="https://zenodo.org/communities/eamena/records?q=&l=list&p=1&s=10&sort=newest" target="_blank" rel="noopener">EAMENA on Zenodo ↗</a>
+        </div>
+
+        <!-- Featured quick-loads -->
+        <div class="subsection-title">Featured Datasets</div>
+
+        <div class="zenodo-card">
+          <div class="zenodo-card-title">Wasfy Mustatils Complex</div>
+          <div class="zenodo-card-desc">Mustatils, Pendants &amp; Cairns — Central Arabia. Wasfy, Tarek (2026).</div>
+          <div class="zenodo-card-actions">
+            <button class="btn btn-small btn-primary"
+              data-load-url="https://zenodo.org/records/20157963/files/AllMustatilsFINALFINAL.geojson?download=1"
+              data-load-name="Wasfy Mustatils (All)"
+              data-load-color="#e67e22">Load All Mustatils</button>
+            <button class="btn btn-small"
+              data-load-url="https://zenodo.org/records/20157963/files/mustatil_orte_erweitert.geojson?download=1"
+              data-load-name="Mustatil Sites Extended"
+              data-load-color="#f39c12">Load Extended</button>
+            <a class="btn btn-small" href="https://zenodo.org/records/20157963" target="_blank" rel="noopener">Zenodo ↗</a>
+          </div>
+        </div>
+
+        <div class="zenodo-card">
+          <div class="zenodo-card-title">Western Nafud Survey</div>
+          <div class="zenodo-card-desc">NW Saudi Arabia &amp; SE Jordan — EAMENA / Fradley (2025). Files in ZIP — download, extract, then upload below.</div>
+          <div class="zenodo-card-actions">
+            <a class="btn btn-small" href="https://zenodo.org/records/16992682" target="_blank" rel="noopener">Zenodo ↗</a>
+          </div>
+        </div>
+
+        <!-- Upload file -->
+        <div class="subsection-title" style="margin-top:16px;">Upload GeoJSON File</div>
+        <div class="form-group">
+          <label for="imp-file">File (.geojson / .json)</label>
+          <input type="file" id="imp-file" accept=".geojson,.json" class="form-input">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="imp-file-name">Layer name</label>
+            <input type="text" id="imp-file-name" class="form-input" placeholder="My Dataset">
+          </div>
+          <div class="form-group" style="flex:0 0 60px;">
+            <label for="imp-file-color">Color</label>
+            <input type="color" id="imp-file-color" value="#2980b9" class="form-input" style="padding:2px;height:38px;cursor:pointer;">
+          </div>
+        </div>
+        <button class="btn btn-primary" id="btn-imp-file" style="width:100%;margin-top:4px;">Upload &amp; Add to Map</button>
+
+        <!-- URL loader -->
+        <div class="subsection-title" style="margin-top:16px;">Load from URL</div>
+        <div class="form-group">
+          <label for="imp-url">Direct GeoJSON URL</label>
+          <input type="url" id="imp-url" class="form-input" placeholder="https://zenodo.org/.../file.geojson?download=1">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="imp-url-name">Layer name</label>
+            <input type="text" id="imp-url-name" class="form-input" placeholder="My Layer">
+          </div>
+          <div class="form-group" style="flex:0 0 60px;">
+            <label for="imp-url-color">Color</label>
+            <input type="color" id="imp-url-color" value="#27ae60" class="form-input" style="padding:2px;height:38px;cursor:pointer;">
+          </div>
+        </div>
+        <button class="btn btn-primary" id="btn-imp-url" style="width:100%;margin-top:4px;">Load from URL</button>
+
+      </div><!-- /tab-import -->
+
+      <!-- ── CONTRIBUTE TAB ── -->
+      <div class="tool-tab-body" id="tab-contribute" style="display:none;">
+        <div class="contribute-status" id="contrib-status-block">
+          <p>Click <strong>Start Adding</strong>, then click on the map to place a marker. Fill in the details and save.</p>
+          <button class="btn btn-primary" id="btn-start-contribute" style="margin-top:8px;">▶ Start Adding</button>
+        </div>
+
+        <div id="contrib-form-block" style="display:none;">
+          <p style="font-size:.8rem;color:var(--color-accent);margin-bottom:12px;background:rgba(201,168,76,.12);border-left:3px solid var(--color-accent);padding:8px 10px;border-radius:0 4px 4px 0;">
+            📍 Click on the map to set position, then fill in details below.
+          </p>
+          <form id="contribute-form" class="contribute-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Lat <span class="required">*</span></label>
+                <input type="number" name="lat" id="contrib-lat" step="0.000001" readonly class="form-input" placeholder="click map">
+              </div>
+              <div class="form-group">
+                <label>Lng <span class="required">*</span></label>
+                <input type="number" name="lng" id="contrib-lng" step="0.000001" readonly class="form-input" placeholder="click map">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Name <span class="required">*</span></label>
+              <input type="text" name="name" class="form-input" required placeholder="Structure name or ID">
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Type <span class="required">*</span></label>
+                <select name="type" class="form-input" required>
+                  <option value="">— select —</option>
+                  <option value="kite">Desert Kite</option>
+                  <option value="open-kite">Open Kite</option>
+                  <option value="v-shaped">V-Shaped Kite</option>
+                  <option value="mustatil">Mustatil / Gate</option>
+                  <option value="wheel">Wheel</option>
+                  <option value="pendant">Pendant</option>
+                  <option value="cairn">Cairn / Tomb</option>
+                  <option value="crescent">Crescent</option>
+                  <option value="ring">Ring</option>
+                  <option value="wall">Meandering Wall</option>
+                  <option value="settlement">Settlement</option>
+                  <option value="rock-art">Rock Art</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Subtype</label>
+                <input type="text" name="subtype" class="form-input" placeholder="optional">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Description</label>
+              <textarea name="description" class="form-input" rows="3" placeholder="Notes, observations…"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Source / Reference</label>
+              <input type="text" name="source" class="form-input" placeholder="URL, paper, personal survey…">
+            </div>
+            <div class="form-group">
+              <label>Your Name</label>
+              <input type="text" name="contributor" class="form-input" placeholder="Anonymous">
+            </div>
+            <div class="form-row" style="margin-top:4px;">
+              <button type="submit" class="btn btn-primary">💾 Save Structure</button>
+              <button type="button" class="btn" id="btn-cancel-contribute">✕ Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div><!-- /tab-contribute -->
+
+      <!-- ── EXPORT TAB ── -->
+      <div class="tool-tab-body" id="tab-export" style="display:none;">
+        <div class="subsection-title">Export Visible Layers</div>
+        <p style="font-size:.78rem;color:var(--color-text-muted);margin-bottom:10px;">Download currently visible features as GeoJSON.</p>
         <div class="export-options">
-          <label class="checkbox-option">
-            <input type="checkbox" id="export-globalkites" checked>
-            <span>GlobalKites layers</span>
-          </label>
-          <label class="checkbox-option">
-            <input type="checkbox" id="export-contributions" checked>
-            <span>My contributions</span>
-          </label>
-          <label class="checkbox-option">
-            <input type="checkbox" id="export-zenodo" checked>
-            <span>Zenodo / imported layers</span>
-          </label>
+          <label class="checkbox-option"><input type="checkbox" id="export-globalkites" checked><span>GlobalKites layers</span></label>
+          <label class="checkbox-option"><input type="checkbox" id="export-contributions" checked><span>My contributions</span></label>
+          <label class="checkbox-option"><input type="checkbox" id="export-imported" checked><span>Imported layers</span></label>
         </div>
-        <button class="btn btn-primary" id="btn-download-geojson">Download GeoJSON</button>
-      </section>
-      <section class="export-section">
-        <h3>Export Individual Layers</h3>
+        <button class="btn btn-primary" id="btn-download-geojson" style="width:100%;margin-top:10px;">⬇ Download GeoJSON</button>
+
+        <div class="subsection-title" style="margin-top:20px;">Export Individual Layers</div>
         <div id="export-layer-list"></div>
-      </section>
-    </div>
+      </div><!-- /tab-export -->
+
+    </div><!-- /panel-content -->
   </aside>
 
+  <!-- feature info popup -->
   <div id="feature-info" class="feature-info" role="dialog" aria-live="polite" hidden>
     <button class="feature-info-close" aria-label="Close info">&times;</button>
     <div class="feature-info-content"></div>
   </div>
 
+  <!-- loading overlay -->
   <div id="loading-overlay" class="loading-overlay" hidden>
     <div class="loading-spinner"></div>
-    <p id="loading-text">Loading...</p>
+    <p id="loading-text">Loading…</p>
   </div>
 
 </main>
-
-<footer class="app-footer">
-  <div class="footer-content">
-    <p><strong>Works of the Old Men</strong> — Open-source archaeological hub &amp; map aggregator</p>
-    <p class="attribution">
-      Data: <a href="https://doi.org/10.5281/zenodo.14844953" target="_blank" rel="noopener">GlobalKites (CC BY 4.0)</a> |
-      <a href="https://zenodo.org/communities/eamena/" target="_blank" rel="noopener">EAMENA Zenodo Community</a> |
-      <a href="https://zenodo.org/records/20157963" target="_blank" rel="noopener">Wasfy Mustatils</a>
-    </p>
-    <p class="attribution">
-      Basemaps: <a href="https://www.esri.com/en-us/arcgis/products/arcgis-world-imagery/overview" target="_blank" rel="noopener">Esri World Imagery</a> |
-      <a href="https://leafletjs.com/" target="_blank" rel="noopener">Leaflet</a>
-    </p>
-    <p><a href="https://github.com/L10n-H34r7/Works-of-the-Old-Men---Archaeological-Hub-Map-Aggregator" target="_blank" rel="noopener">View Source on GitHub</a> | <a href="#" id="btn-report-issue">Report Issue</a></p>
-  </div>
-</footer>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script src="js/utils.js"></script>
 <script src="js/map.js"></script>
 <script src="js/layers.js"></script>
 <script src="js/ui.js"></script>
-<script src="js/zenodo.js"></script>
 <script src="js/contrib.js"></script>
 <script src="js/app.js"></script>
 </body>
