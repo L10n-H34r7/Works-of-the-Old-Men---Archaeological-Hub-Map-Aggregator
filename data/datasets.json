@@ -28,6 +28,7 @@
     "color": "#2980b9",
     "attribution": "L10n-H34r7 · Personal survey data",
     "sublayers": [
+      { "id": "l10n_archeo1", "name": "Archeo Survey 1", "file": "data/other/L10n/Archeo.geojson", "color": "#2980b9" },
       { "id": "l10n_archeo2", "name": "Archeo Survey 2", "file": "data/other/L10n/Archeo.2.geojson", "color": "#2980b9" }
     ]
   },
