@@ -1,125 +1,166 @@
-/** Data layer management */
+/**
+ * LayerManager
+ * Reads data/datasets.json on startup and builds the collapsible dataset tree.
+ * To add a new dataset: add a subfolder under data/ and add an entry to datasets.json.
+ */
 
 const LayerManager = {
   map: null,
-  layerGroups: {},      // id -> L.featureGroup
+  layerGroups: {},       // layerId -> L.featureGroup
   visibleLayers: new Set(),
-  featureCache: new Map(), // stamp -> {layer, feature, layerId}
-  importedLayers: [],   // [{id, name, color, count}]
+  featureCache: new Map(), // L.stamp -> { layer, feature, layerId }
+  datasets: [],          // loaded from datasets.json
+  importedLayers: [],    // runtime-imported: { id, name, color, count }
   _importCounter: 0,
 
-  // Static dataset definitions — add new datasets here by adding entries
-  datasetDefs: [
-    {
-      id: 'globalkites',
-      name: 'GlobalKites',
-      attribution: '<a href="https://doi.org/10.5281/zenodo.14844953" target="_blank" rel="noopener">Barge et al. (2024)</a> · CC BY 4.0 · 6,721+ kites',
-      color: null, // per-sublayer
-      sublayers: [
-        { id: 'kites',     name: 'All Kites (6,721)',    file: 'data/globalkites/kites.geojson',     color: '#e74c3c' },
-        { id: 'openkites', name: 'Open Kites (862)',     file: 'data/globalkites/openkites.geojson', color: '#e67e22' },
-        { id: 'sample610', name: 'Sample 610 (Detail)', file: 'data/globalkites/sample610.geojson', color: '#f39c12' },
-        { id: 'vshaped',   name: 'V-Shaped (64)',        file: 'data/globalkites/vshaped.geojson',   color: '#c0392b' },
-        { id: 'crescents', name: 'Crescents (241)',      file: 'data/globalkites/crescents.geojson', color: '#9b59b6' },
-        { id: 'rings',     name: 'Rings (62)',            file: 'data/globalkites/rings.geojson',     color: '#8e44ad' }
-      ]
-    }
-    // Add more static datasets here as objects with id, name, sublayers or file
-  ],
+  // ─── INIT ─────────────────────────────────────────────────
 
-  init(map) {
+  async init(map) {
     this.map = map;
-    // Create contribution group
     this.layerGroups['contributions'] = L.featureGroup().addTo(map);
-    // Build the layer tree UI
+
+    try {
+      const resp = await fetch('data/datasets.json');
+      if (!resp.ok) throw new Error('datasets.json not found');
+      this.datasets = await resp.json();
+    } catch(e) {
+      console.warn('Could not load datasets.json, using empty dataset list:', e.message);
+      this.datasets = [];
+    }
+
     this._buildDatasetTree();
   },
 
-  // ─── UI TREE ─────────────────────────────────────────────
+  // ─── BUILD LAYERS PANEL TREE ──────────────────────────────
 
   _buildDatasetTree() {
-    this.datasetDefs.forEach(ds => {
+    const container = document.getElementById('dataset-tree');
+    if (!container) return;
+    container.innerHTML = '';
+
+    this.datasets.forEach(ds => {
+      // Pre-create featureGroups for all sublayers
       if (ds.sublayers) {
-        // Create a layer group per sublayer
         ds.sublayers.forEach(sl => {
-          this.layerGroups[sl.id] = L.featureGroup();
-        });
-        // Build sublayer checkboxes
-        const container = document.getElementById('globalkites-toggles');
-        if (!container) return;
-        container.innerHTML = '';
-        ds.sublayers.forEach(sl => {
-          const lbl = document.createElement('label');
-          lbl.className = 'sublayer-option';
-          lbl.innerHTML = `
-            <input type="checkbox" id="layer-${sl.id}" value="${sl.id}">
-            <span class="sublayer-dot" style="background:${sl.color}"></span>
-            <span>${sl.name}</span>`;
-          container.appendChild(lbl);
-          const cb = lbl.querySelector('input');
-          cb.addEventListener('change', e => this.toggleLayer(sl.id, e.target.checked, sl.file, sl.color));
+          if (!this.layerGroups[sl.id]) this.layerGroups[sl.id] = L.featureGroup();
         });
       }
-    });
 
-    // Dataset group toggle (expand/collapse)
-    const hdr = document.getElementById('toggle-globalkites');
-    const body = document.getElementById('body-globalkites');
-    if (hdr && body) {
-      hdr.addEventListener('click', () => {
-        const open = body.style.display !== 'none';
-        body.style.display = open ? 'none' : '';
-        hdr.querySelector('.dataset-arrow').textContent = open ? '▶' : '▼';
-        hdr.setAttribute('aria-expanded', String(!open));
-      });
-    }
+      const group = this._makeDatasetGroup(ds);
+      container.appendChild(group);
+    });
   },
 
-  // ─── TOGGLE / LOAD ───────────────────────────────────────
+  _makeDatasetGroup(ds) {
+    const wrap = document.createElement('div');
+    wrap.className = 'dataset-group';
+    wrap.id = `ds-group-${ds.id}`;
 
-  async toggleLayer(id, visible, fileUrl, color) {
+    // Header button
+    const hdr = document.createElement('button');
+    hdr.className = 'dataset-header';
+    hdr.setAttribute('aria-expanded', 'false');
+    hdr.innerHTML = `
+      <span class="dataset-arrow">▶</span>
+      <span class="dataset-name">${ds.name}</span>
+      <span class="feature-count" id="count-${ds.id}">0</span>`;
+    wrap.appendChild(hdr);
+
+    // Body (sublayers)
+    const body = document.createElement('div');
+    body.className = 'dataset-body';
+    body.style.display = 'none';
+
+    if (ds.attribution) {
+      const attr = document.createElement('p');
+      attr.className = 'layer-attribution';
+      attr.innerHTML = ds.attribution;
+      body.appendChild(attr);
+    }
+
+    const list = document.createElement('div');
+    list.className = 'sublayer-list';
+
+    if (ds.sublayers) {
+      ds.sublayers.forEach(sl => {
+        const lbl = this._makeSublayerLabel(sl, ds.id);
+        list.appendChild(lbl);
+      });
+    }
+    body.appendChild(list);
+    wrap.appendChild(body);
+
+    // Toggle expand/collapse
+    hdr.addEventListener('click', () => {
+      const open = body.style.display !== 'none';
+      body.style.display = open ? 'none' : '';
+      hdr.setAttribute('aria-expanded', String(!open));
+      hdr.querySelector('.dataset-arrow').textContent = open ? '▶' : '▼';
+    });
+
+    return wrap;
+  },
+
+  _makeSublayerLabel(sl, dsId) {
+    const lbl = document.createElement('label');
+    lbl.className = 'sublayer-option';
+    lbl.innerHTML = `
+      <input type="checkbox" id="layer-${sl.id}">
+      <span class="sublayer-dot" style="background:${sl.color}"></span>
+      <span class="sublayer-name">${sl.name}</span>`;
+
+    const cb = lbl.querySelector('input');
+    cb.addEventListener('change', e => {
+      this.toggleLayer(sl.id, e.target.checked, sl.file, sl.color, dsId);
+    });
+    return lbl;
+  },
+
+  // ─── TOGGLE / LOAD ────────────────────────────────────────
+
+  async toggleLayer(id, visible, fileUrl, color, dsId) {
     if (visible) {
       this.visibleLayers.add(id);
       if (!this.layerGroups[id]) this.layerGroups[id] = L.featureGroup();
+
       if (!this.layerGroups[id]._loaded) {
+        this._showLoading(`Loading ${id}…`);
         try {
-          this._showLoading(`Loading ${id}…`);
           const geojson = await this._fetchLocal(fileUrl);
           this._renderGeoJSON(id, geojson, color);
           this.layerGroups[id]._loaded = true;
-        } catch (e) {
+        } catch(e) {
           console.error('toggleLayer error:', e);
-          Utils.showToast(`Failed to load ${id}: ${e.message}`, 'error');
-          document.getElementById(`layer-${id}`) && (document.getElementById(`layer-${id}`).checked = false);
+          Utils.showToast(`Failed to load: ${e.message}`, 'error');
+          const cb = document.getElementById(`layer-${id}`);
+          if (cb) cb.checked = false;
           this.visibleLayers.delete(id);
           this._hideLoading();
           return;
-        } finally { this._hideLoading(); }
+        } finally {
+          this._hideLoading();
+        }
       }
       this.map.addLayer(this.layerGroups[id]);
     } else {
       this.visibleLayers.delete(id);
       if (this.layerGroups[id]) this.map.removeLayer(this.layerGroups[id]);
     }
-    this._updateCounts();
+
+    this._updateDatasetCount(dsId);
     this._updateExportList();
   },
 
-  // ─── IMPORT LAYER (file or URL) ──────────────────────────
+  // ─── IMPORT (file upload) ─────────────────────────────────
 
   async importGeoJSON(geojson, name, color) {
-    const id = `imported_${++this._importCounter}`;
     color = color || '#3498db';
 
-    if (!geojson || !geojson.features || geojson.features.length === 0)
-      throw new Error('GeoJSON has no features');
-
-    // Only keep features with geometry
-    const valid = geojson.features.filter(f => f && f.geometry);
-    if (valid.length === 0) throw new Error('No valid geometries found');
-
+    const valid = (geojson.features || []).filter(f => f && f.geometry);
+    if (!valid.length) throw new Error('No valid geometries found');
     geojson = { type: 'FeatureCollection', features: valid };
 
+    const id = `imported_${++this._importCounter}`;
     const lg = L.featureGroup();
     this.layerGroups[id] = lg;
     lg._loaded = true;
@@ -130,19 +171,13 @@ const LayerManager = {
     this.visibleLayers.add(id);
 
     // Zoom to layer
-    try {
-      const bounds = lg.getBounds();
-      if (bounds && bounds.isValid()) MapManager.fitBounds(bounds);
-    } catch(e) {}
+    try { const b = lg.getBounds(); if (b?.isValid()) MapManager.fitBounds(b); } catch(e) {}
 
     const count = valid.length;
     this.importedLayers.push({ id, name, color, count });
 
-    // Inject into the Layers panel dataset tree
     this._addImportedToTree(id, name, color, count);
-    this._updateCounts();
     this._updateExportList();
-
     Utils.showToast(`Loaded "${name}" — ${Utils.formatNumber(count)} features`, 'success');
     return id;
   },
@@ -151,53 +186,46 @@ const LayerManager = {
     const container = document.getElementById('imported-datasets');
     if (!container) return;
 
-    const group = document.createElement('div');
-    group.className = 'dataset-group';
-    group.id = `imported-group-${id}`;
-    group.innerHTML = `
-      <div class="dataset-header imported-header">
-        <span class="sublayer-dot" style="background:${color}"></span>
-        <label class="sublayer-option" style="flex:1;margin:0;cursor:pointer;">
-          <input type="checkbox" id="layer-${id}" checked>
-          <span style="font-weight:500;">${name}</span>
-          <span class="feature-count" style="margin-left:auto;">${Utils.formatNumber(count)}</span>
+    const wrap = document.createElement('div');
+    wrap.className = 'dataset-group imported-dataset-group';
+    wrap.id = `ds-group-${id}`;
+    wrap.innerHTML = `
+      <div class="dataset-header imported-header" style="cursor:default;">
+        <span class="sublayer-dot" style="background:${color};width:10px;height:10px;flex-shrink:0;border-radius:50%;border:1px solid rgba(0,0,0,.15);"></span>
+        <label class="sublayer-option" style="flex:1;border:none;padding:0;margin:0;cursor:pointer;background:transparent;">
+          <input type="checkbox" id="layer-${id}" checked style="margin:0;">
+          <span class="sublayer-name" style="font-weight:600;">${name}</span>
         </label>
-        <button class="remove-layer-btn" data-id="${id}" title="Remove layer">✕</button>
+        <span class="feature-count">${Utils.formatNumber(count)}</span>
+        <button class="remove-layer-btn" data-remove="${id}" title="Remove layer">✕</button>
       </div>`;
-    container.appendChild(group);
 
-    // Toggle visibility
-    group.querySelector(`#layer-${id}`).addEventListener('change', e => {
+    container.appendChild(wrap);
+
+    wrap.querySelector(`#layer-${id}`).addEventListener('change', e => {
       const lg = this.layerGroups[id];
       if (!lg) return;
       if (e.target.checked) { this.map.addLayer(lg); this.visibleLayers.add(id); }
       else { this.map.removeLayer(lg); this.visibleLayers.delete(id); }
-      this._updateCounts();
     });
 
-    // Remove layer
-    group.querySelector('.remove-layer-btn').addEventListener('click', () => {
-      this._removeImportedLayer(id);
-    });
+    wrap.querySelector('[data-remove]').addEventListener('click', () => this._removeImported(id));
   },
 
-  _removeImportedLayer(id) {
+  _removeImported(id) {
     if (this.layerGroups[id]) {
       this.map.removeLayer(this.layerGroups[id]);
-      // Clean featureCache
       this.featureCache.forEach((v, k) => { if (v.layerId === id) this.featureCache.delete(k); });
       delete this.layerGroups[id];
     }
     this.visibleLayers.delete(id);
     this.importedLayers = this.importedLayers.filter(l => l.id !== id);
-    const el = document.getElementById(`imported-group-${id}`);
-    if (el) el.remove();
-    this._updateCounts();
+    document.getElementById(`ds-group-${id}`)?.remove();
     this._updateExportList();
     Utils.showToast('Layer removed', 'info');
   },
 
-  // ─── RENDER GEOJSON ──────────────────────────────────────
+  // ─── RENDER ───────────────────────────────────────────────
 
   _renderGeoJSON(id, geojson, color) {
     const lg = this.layerGroups[id];
@@ -206,10 +234,9 @@ const LayerManager = {
 
     L.geoJSON(geojson, {
       pointToLayer: (f, ll) => L.marker(ll, { icon: Utils.makeIcon(color) }),
-      style: () => ({ color, weight: 2, opacity: 0.85, fillColor: color, fillOpacity: 0.25 }),
+      style: () => ({ color, weight: 2, opacity: .85, fillColor: color, fillOpacity: .25 }),
       onEachFeature: (f, layer) => {
-        const stamp = L.stamp(layer);
-        this.featureCache.set(stamp, { layer, feature: f, layerId: id });
+        this.featureCache.set(L.stamp(layer), { layer, feature: f, layerId: id });
         layer.bindPopup(() => this._popupHTML(f, id), { maxWidth: 320, className: 'custom-popup' });
         layer.on('click', e => {
           e.originalEvent?.stopPropagation();
@@ -226,60 +253,55 @@ const LayerManager = {
     let h = `<div class="popup-content"><h4>${name}</h4>`;
     const skip = ['_layer','_source_layer','_id','FID','OBJECTID'];
     let shown = 0;
-    for (const [k,v] of Object.entries(p)) {
+    for (const [k, v] of Object.entries(p)) {
       if (skip.includes(k) || v === null || v === undefined || v === '' || v === 'None') continue;
       if (shown >= 8) { h += `<p style="color:#999;font-size:.7rem">…more fields</p>`; break; }
-      const label = k.replace(/_/g,' ').replace(/\b\w/g,x=>x.toUpperCase());
-      h += `<p class="popup-meta"><strong>${label}:</strong> ${v}</p>`;
+      h += `<p class="popup-meta"><strong>${k.replace(/_/g,' ').replace(/\b\w/g,x=>x.toUpperCase())}:</strong> ${v}</p>`;
       shown++;
     }
-    if (coords) h += `<p class="popup-coords">${Utils.formatCoords(coords[1],coords[0],6)}</p>`;
+    if (coords) h += `<p class="popup-coords">${Utils.formatCoords(coords[1], coords[0], 6)}</p>`;
     h += '</div>';
     return h;
   },
 
-  // ─── CONTRIBUTIONS ───────────────────────────────────────
+  // ─── CONTRIBUTIONS ────────────────────────────────────────
 
   addContribution(feature) {
-    const lg = this.layerGroups['contributions'];
-    const color = '#f39c12';
     L.geoJSON(feature, {
-      pointToLayer: (f, ll) => L.marker(ll, { icon: Utils.makeIcon(color, true) }),
+      pointToLayer: (f, ll) => L.marker(ll, { icon: Utils.makeIcon('#f39c12', true) }),
       onEachFeature: (f, layer) => {
-        const stamp = L.stamp(layer);
-        this.featureCache.set(stamp, { layer, feature: f, layerId: 'contributions' });
+        this.featureCache.set(L.stamp(layer), { layer, feature: f, layerId: 'contributions' });
         layer.bindPopup(() => this._popupHTML(f, 'contributions'), { maxWidth: 320, className: 'custom-popup' });
         layer.on('click', e => { e.originalEvent?.stopPropagation(); window.UIManager?.showFeatureInfo(f, 'contributions'); });
       }
-    }).addTo(lg);
-    this._updateCounts();
+    }).addTo(this.layerGroups['contributions']);
+    this._updateContribCount();
   },
 
-  removeContribution(id) {
+  removeContribution(cid) {
     let removed = false;
     this.layerGroups['contributions']?.eachLayer(l => {
-      const s = L.stamp(l), c = this.featureCache.get(s);
-      if (c && c.feature.properties._id === id) {
+      const c = this.featureCache.get(L.stamp(l));
+      if (c?.feature.properties._id === cid) {
         this.layerGroups['contributions'].removeLayer(l);
-        this.featureCache.delete(s);
+        this.featureCache.delete(L.stamp(l));
         removed = true;
       }
     });
-    if (removed) this._updateCounts();
+    if (removed) this._updateContribCount();
     return removed;
   },
 
   clearContributions() {
     this.layerGroups['contributions']?.clearLayers();
-    this.featureCache.forEach((v,k) => { if (v.layerId === 'contributions') this.featureCache.delete(k); });
-    this._updateCounts();
+    this.featureCache.forEach((v, k) => { if (v.layerId === 'contributions') this.featureCache.delete(k); });
+    this._updateContribCount();
   },
 
   getContributionsGeoJSON() {
     const features = [];
     this.layerGroups['contributions']?.eachLayer(l => {
-      const c = this.featureCache.get(L.stamp(l));
-      if (c?.feature) features.push(c.feature);
+      const c = this.featureCache.get(L.stamp(l)); if (c?.feature) features.push(c.feature);
     });
     return { type: 'FeatureCollection', features };
   },
@@ -289,15 +311,20 @@ const LayerManager = {
     if (g?.features) g.features.forEach(f => this.addContribution(f));
   },
 
-  // ─── EXPORT ──────────────────────────────────────────────
+  // ─── EXPORT ───────────────────────────────────────────────
 
   exportAll(opts = {}) {
     const features = [];
-    if (opts.globalkites) {
-      this.datasetDefs[0].sublayers.forEach(sl => {
-        if (this.visibleLayers.has(sl.id) && this.layerGroups[sl.id]?._loaded) {
-          this.layerGroups[sl.id].eachLayer(l => {
-            const c = this.featureCache.get(L.stamp(l)); if (c?.feature) features.push(c.feature);
+
+    if (opts.datasets) {
+      this.datasets.forEach(ds => {
+        if (ds.sublayers) {
+          ds.sublayers.forEach(sl => {
+            if (this.visibleLayers.has(sl.id) && this.layerGroups[sl.id]?._loaded) {
+              this.layerGroups[sl.id].eachLayer(l => {
+                const c = this.featureCache.get(L.stamp(l)); if (c?.feature) features.push(c.feature);
+              });
+            }
           });
         }
       });
@@ -316,8 +343,11 @@ const LayerManager = {
         }
       });
     }
-    const g = { type: 'FeatureCollection', features };
-    Utils.downloadFile(JSON.stringify(g, null, 2), `wom_export_${new Date().toISOString().split('T')[0]}.geojson`);
+
+    Utils.downloadFile(
+      JSON.stringify({ type: 'FeatureCollection', features }, null, 2),
+      `wom_export_${new Date().toISOString().split('T')[0]}.geojson`
+    );
     Utils.showToast(`Exported ${features.length} features`, 'success');
   },
 
@@ -326,26 +356,32 @@ const LayerManager = {
     this.layerGroups[id]?.eachLayer(l => {
       const c = this.featureCache.get(L.stamp(l)); if (c?.feature) features.push(c.feature);
     });
-    Utils.downloadFile(JSON.stringify({ type:'FeatureCollection', features }, null, 2), `wom_${id}_${new Date().toISOString().split('T')[0]}.geojson`);
+    Utils.downloadFile(
+      JSON.stringify({ type: 'FeatureCollection', features }, null, 2),
+      `wom_${id}_${new Date().toISOString().split('T')[0]}.geojson`
+    );
     Utils.showToast(`Exported ${features.length} features`, 'success');
   },
 
-  // ─── COUNTS & EXPORT LIST ────────────────────────────────
+  // ─── COUNTS ───────────────────────────────────────────────
 
-  _updateCounts() {
-    // GlobalKites
-    let gkCount = 0;
-    this.datasetDefs[0].sublayers.forEach(sl => {
-      if (this.visibleLayers.has(sl.id) && this.layerGroups[sl.id]?._loaded)
-        gkCount += this.layerGroups[sl.id].getLayers().length;
-    });
-    const gkEl = document.getElementById('count-globalkites');
-    if (gkEl) gkEl.textContent = Utils.formatNumber(gkCount);
+  _updateDatasetCount(dsId) {
+    const ds = this.datasets.find(d => d.id === dsId);
+    if (!ds) return;
+    let total = 0;
+    if (ds.sublayers) {
+      ds.sublayers.forEach(sl => {
+        if (this.visibleLayers.has(sl.id) && this.layerGroups[sl.id]?._loaded)
+          total += this.layerGroups[sl.id].getLayers().length;
+      });
+    }
+    const el = document.getElementById(`count-${dsId}`);
+    if (el) el.textContent = Utils.formatNumber(total);
+  },
 
-    // Contributions
-    const contribEl = document.getElementById('count-contributions');
-    if (contribEl) contribEl.textContent = Utils.formatNumber(this.layerGroups['contributions']?.getLayers().length || 0);
-
+  _updateContribCount() {
+    const el = document.getElementById('count-contributions');
+    if (el) el.textContent = Utils.formatNumber(this.layerGroups['contributions']?.getLayers().length || 0);
     this._updateExportList();
   },
 
@@ -356,7 +392,7 @@ const LayerManager = {
 
     const addBtn = (name, id) => {
       const n = this.layerGroups[id]?.getLayers().length || 0;
-      if (n === 0) return;
+      if (!n) return;
       const b = document.createElement('button');
       b.className = 'btn btn-small export-layer-btn';
       b.innerHTML = `<span>${name}</span><span class="feature-count">${Utils.formatNumber(n)}</span>`;
@@ -364,14 +400,14 @@ const LayerManager = {
       c.appendChild(b);
     };
 
-    this.datasetDefs[0].sublayers.forEach(sl => {
-      if (this.layerGroups[sl.id]?._loaded) addBtn(sl.name, sl.id);
+    this.datasets.forEach(ds => {
+      if (ds.sublayers) ds.sublayers.forEach(sl => { if (this.layerGroups[sl.id]?._loaded) addBtn(sl.name, sl.id); });
     });
     this.importedLayers.forEach(il => addBtn(il.name, il.id));
     addBtn('My Contributions', 'contributions');
   },
 
-  // ─── HELPERS ─────────────────────────────────────────────
+  // ─── HELPERS ──────────────────────────────────────────────
 
   async _fetchLocal(url) {
     const r = await fetch(url);

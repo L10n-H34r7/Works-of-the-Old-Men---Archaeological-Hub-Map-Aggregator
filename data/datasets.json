@@ -1,0 +1,43 @@
+[
+  {
+    "id": "globalkites",
+    "name": "GlobalKites",
+    "color": null,
+    "attribution": "Barge et al. (2024) · CC BY 4.0 · zenodo.org/doi/10.5281/zenodo.14844953",
+    "sublayers": [
+      { "id": "kites",     "name": "All Kites (6,721)",       "file": "data/globalkites/kites.geojson",     "color": "#e74c3c" },
+      { "id": "openkites", "name": "Open Kites (862)",        "file": "data/globalkites/openkites.geojson", "color": "#e67e22" },
+      { "id": "sample610", "name": "Sample 610 (Detailed)",  "file": "data/globalkites/sample610.geojson", "color": "#f39c12" },
+      { "id": "vshaped",   "name": "V-Shaped (64)",           "file": "data/globalkites/vshaped.geojson",   "color": "#c0392b" },
+      { "id": "crescents", "name": "Crescents (241)",         "file": "data/globalkites/crescents.geojson", "color": "#9b59b6" },
+      { "id": "rings",     "name": "Rings (62)",               "file": "data/globalkites/rings.geojson",     "color": "#8e44ad" }
+    ]
+  },
+  {
+    "id": "eamena",
+    "name": "EAMENA",
+    "color": "#27ae60",
+    "attribution": "EAMENA Project · University of Oxford · CC BY 4.0",
+    "sublayers": [
+      { "id": "eamena_nafud", "name": "Western Nafud Survey", "file": "data/eamena/mapping_the_archaeological_landscapes_of_the_western_nafud.geojson", "color": "#27ae60" }
+    ]
+  },
+  {
+    "id": "other_l10n",
+    "name": "L10n Surveys",
+    "color": "#2980b9",
+    "attribution": "L10n-H34r7 · Personal survey data",
+    "sublayers": [
+      { "id": "l10n_archeo2", "name": "Archeo Survey 2", "file": "data/other/L10n/Archeo.2.geojson", "color": "#2980b9" }
+    ]
+  },
+  {
+    "id": "other_megalithic",
+    "name": "Megalithic.co",
+    "color": "#e67e22",
+    "attribution": "Wasfy, Tarek (2026) · megalithic.co · zenodo.org/records/20157963",
+    "sublayers": [
+      { "id": "megalithic_mustatils", "name": "All Mustatils (Wasfy)", "file": "data/other/megalithic.co/AllMustatilsFINALFINAL.geojson", "color": "#e67e22" }
+    ]
+  }
+]

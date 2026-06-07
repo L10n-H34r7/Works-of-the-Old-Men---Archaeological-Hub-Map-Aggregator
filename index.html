@@ -20,31 +20,31 @@
     <p class="app-subtitle">Archaeological Hub &amp; Map Aggregator for Ancient Arabian Stone Structures</p>
   </div>
   <nav class="header-nav" aria-label="Main navigation">
-    <button class="nav-btn" id="btn-about" aria-expanded="false">About</button>
-    <button class="nav-btn active" id="btn-layers" aria-expanded="true">Layers</button>
-    <button class="nav-btn" id="btn-tools" aria-expanded="false">Tools</button>
+    <button class="nav-btn" id="btn-about">About</button>
+    <button class="nav-btn active" id="btn-layers">Layers</button>
+    <button class="nav-btn" id="btn-tools">Tools</button>
   </nav>
 </header>
 
 <main class="app-main">
-  <div id="map" class="map-container" role="application" aria-label="Interactive map of Works of the Old Men"></div>
+  <div id="map" class="map-container" role="application" aria-label="Interactive map"></div>
 
   <!-- ═══════════════════════════════════════════════
        ABOUT PANEL
   ════════════════════════════════════════════════ -->
-  <aside class="side-panel" id="panel-about" role="region" aria-label="About" hidden>
+  <aside class="side-panel" id="panel-about" hidden>
     <div class="panel-header">
       <h2>About This Project</h2>
-      <button class="panel-close" data-close="about" aria-label="Close">&times;</button>
+      <button class="panel-close" data-close="about">&times;</button>
     </div>
     <div class="panel-content">
       <article class="about-content">
         <h3>What are the "Works of the Old Men"?</h3>
         <p>The "Works of the Old Men" (Arabic: <span lang="ar">أعمال الأولين</span>) is the name given by Bedouin tribes to the vast arrays of ancient stone structures found across the Arabian Peninsula—from Syria and Jordan in the north, through Saudi Arabia, to Yemen and Oman in the south, extending across the Red Sea into Djibouti and Ethiopia.</p>
-        <p>First brought to scholarly attention by RAF pilots in the 1920s, these structures number in the hundreds of thousands and include:</p>
+        <p>First brought to scholarly attention by RAF pilots in the 1920s, these structures include:</p>
         <ul>
-          <li><strong>Desert Kites</strong> — Massive hunting traps with long driving walls converging on an enclosure</li>
-          <li><strong>Wheels</strong> — Circular stone arrangements with spokes, likely funerary/ritual</li>
+          <li><strong>Desert Kites</strong> — Massive hunting traps with long driving walls</li>
+          <li><strong>Wheels</strong> — Circular stone arrangements with spokes, likely funerary</li>
           <li><strong>Pendants</strong> — Strings of burial cairns with tail structures</li>
           <li><strong>Mustatils / Gates</strong> — Monumental rectangular structures (20–600m long)</li>
           <li><strong>Meandering Walls</strong> — Long, sinuous stone walls</li>
@@ -54,17 +54,17 @@
         <h3>Data Sources</h3>
         <ul class="source-list">
           <li><strong>GlobalKites Project</strong> (CNRS/Université Lyon 2) — 6,721+ desert kites <a href="https://doi.org/10.5281/zenodo.14844953" target="_blank" rel="noopener">[Zenodo]</a></li>
-          <li><strong>EAMENA Community</strong> (Oxford/Leicester/Durham) — Endangered archaeology across MENA <a href="https://zenodo.org/communities/eamena/" target="_blank" rel="noopener">[Zenodo]</a></li>
+          <li><strong>EAMENA</strong> (Oxford/Leicester/Durham) — Endangered archaeology across MENA <a href="https://zenodo.org/communities/eamena/" target="_blank" rel="noopener">[Zenodo]</a></li>
           <li><strong>Wasfy Mustatils Complex</strong> — Mustatil &amp; pendant structures, Central Arabia <a href="https://zenodo.org/records/20157963" target="_blank" rel="noopener">[Zenodo]</a></li>
           <li><strong>Western Nafud Survey</strong> — NW Saudi Arabia &amp; SE Jordan <a href="https://zenodo.org/records/16992682" target="_blank" rel="noopener">[Zenodo]</a></li>
         </ul>
 
         <h3>Purpose</h3>
-        <p>This hub aggregates dispersed datasets onto one unified map for researchers, heritage professionals, and enthusiasts. Use the <strong>Layers</strong> panel to toggle datasets and the <strong>Tools</strong> panel to import new data, mark structures, or export.</p>
+        <p>This hub aggregates dispersed datasets onto one unified map for researchers, heritage professionals, and enthusiasts. Use the <strong>Layers</strong> panel to toggle datasets, and <strong>Tools</strong> to upload data, mark structures, or export.</p>
 
         <h3>License &amp; Attribution</h3>
         <p>Open source (MIT License). Data layers retain original licenses (CC BY 4.0 for GlobalKites).</p>
-        <p style="margin-top:8px;">Basemaps: <a href="https://www.esri.com/en-us/arcgis/products/arcgis-world-imagery/overview" target="_blank" rel="noopener">Esri World Imagery</a> | Built with <a href="https://leafletjs.com/" target="_blank" rel="noopener">Leaflet</a></p>
+        <p style="margin-top:8px;">Basemaps: <a href="https://www.esri.com/en-us/arcgis/products/arcgis-world-imagery/overview" target="_blank" rel="noopener">Esri World Imagery</a> · Built with <a href="https://leafletjs.com/" target="_blank" rel="noopener">Leaflet</a></p>
         <p style="margin-top:8px;"><a href="https://github.com/L10n-H34r7/Works-of-the-Old-Men---Archaeological-Hub-Map-Aggregator" target="_blank" rel="noopener">📂 View Source on GitHub</a></p>
       </article>
     </div>
@@ -73,14 +73,14 @@
   <!-- ═══════════════════════════════════════════════
        LAYERS PANEL
   ════════════════════════════════════════════════ -->
-  <aside class="side-panel" id="panel-layers" role="region" aria-label="Map Layers">
+  <aside class="side-panel" id="panel-layers">
     <div class="panel-header">
       <h2>Map Layers</h2>
-      <button class="panel-close" data-close="layers" aria-label="Close">&times;</button>
+      <button class="panel-close" data-close="layers">&times;</button>
     </div>
     <div class="panel-content">
 
-      <!-- BASE MAPS collapsible -->
+      <!-- BASE MAPS — collapsible -->
       <section class="layer-section">
         <button class="collapsible-header" id="toggle-basemaps" aria-expanded="false">
           <span>Base Maps</span>
@@ -104,40 +104,28 @@
               <input type="radio" name="basemap" value="google-hybrid">
               <span class="option-label">🛰 Google Hybrid (Satellite + Roads)</span>
             </label>
+            <label class="base-map-option">
+              <input type="radio" name="basemap" value="bing">
+              <span class="option-label">🛰 Bing Aerial</span>
+            </label>
           </div>
         </div>
       </section>
 
-      <!-- DATASETS tree -->
+      <!-- DATASETS — built dynamically from datasets.json -->
       <section class="layer-section">
         <div class="section-title">Datasets</div>
-
-        <!-- GlobalKites -->
-        <div class="dataset-group">
-          <button class="dataset-header" id="toggle-globalkites" aria-expanded="false">
-            <span class="dataset-arrow">▶</span>
-            <span class="dataset-name">GlobalKites</span>
-            <span class="feature-count" id="count-globalkites">0</span>
-          </button>
-          <div class="dataset-body" id="body-globalkites" style="display:none;">
-            <p class="layer-attribution" style="padding:6px 8px 4px 24px;">
-              <a href="https://doi.org/10.5281/zenodo.14844953" target="_blank" rel="noopener">Barge et al. (2024)</a> · CC BY 4.0 · 6,721+ kites
-            </p>
-            <div id="globalkites-toggles" class="sublayer-list"></div>
-          </div>
-        </div>
-
-        <!-- Imported datasets will be injected here -->
+        <div id="dataset-tree"></div>
+        <!-- Runtime-imported layers injected here -->
         <div id="imported-datasets"></div>
-
       </section>
 
-      <!-- MY CONTRIBUTIONS count + controls -->
+      <!-- CONTRIBUTIONS -->
       <section class="layer-section">
         <div class="section-title">
           My Contributions <span class="feature-count" id="count-contributions">0</span>
         </div>
-        <div class="contribution-controls" style="margin-top:8px;">
+        <div class="contribution-controls">
           <button class="btn btn-small" id="btn-clear-contrib">Clear All</button>
           <button class="btn btn-small btn-primary" id="btn-save-contrib">Save to File</button>
           <input type="file" id="input-load-contrib" accept=".geojson,.json" hidden>
@@ -150,16 +138,16 @@
   </aside>
 
   <!-- ═══════════════════════════════════════════════
-       TOOLS PANEL  (Add Data + Contribute + Export merged)
+       TOOLS PANEL
   ════════════════════════════════════════════════ -->
-  <aside class="side-panel" id="panel-tools" role="region" aria-label="Tools" hidden>
+  <aside class="side-panel" id="panel-tools" hidden>
     <div class="panel-header">
       <h2>Tools</h2>
-      <button class="panel-close" data-close="tools" aria-label="Close">&times;</button>
+      <button class="panel-close" data-close="tools">&times;</button>
     </div>
     <div class="panel-content">
 
-      <!-- ── TAB BAR ── -->
+      <!-- TAB BAR -->
       <div class="tool-tabs">
         <button class="tool-tab active" data-tab="tab-import">Import Data</button>
         <button class="tool-tab" data-tab="tab-contribute">Mark Structure</button>
@@ -168,43 +156,12 @@
 
       <!-- ── IMPORT TAB ── -->
       <div class="tool-tab-body" id="tab-import">
+        <p class="tab-intro">
+          Upload a GeoJSON file to add it as a new layer on the map. It will appear in the Layers panel under "Datasets".
+        </p>
 
-        <div class="zenodo-intro">
-          Upload a GeoJSON file or paste a direct download URL to add it as a new layer on the map.
-          Browse <a href="https://zenodo.org/communities/eamena/records?q=&l=list&p=1&s=10&sort=newest" target="_blank" rel="noopener">EAMENA on Zenodo ↗</a>
-        </div>
-
-        <!-- Featured quick-loads -->
-        <div class="subsection-title">Featured Datasets</div>
-
-        <div class="zenodo-card">
-          <div class="zenodo-card-title">Wasfy Mustatils Complex</div>
-          <div class="zenodo-card-desc">Mustatils, Pendants &amp; Cairns — Central Arabia. Wasfy, Tarek (2026).</div>
-          <div class="zenodo-card-actions">
-            <button class="btn btn-small btn-primary"
-              data-load-url="https://zenodo.org/records/20157963/files/AllMustatilsFINALFINAL.geojson?download=1"
-              data-load-name="Wasfy Mustatils (All)"
-              data-load-color="#e67e22">Load All Mustatils</button>
-            <button class="btn btn-small"
-              data-load-url="https://zenodo.org/records/20157963/files/mustatil_orte_erweitert.geojson?download=1"
-              data-load-name="Mustatil Sites Extended"
-              data-load-color="#f39c12">Load Extended</button>
-            <a class="btn btn-small" href="https://zenodo.org/records/20157963" target="_blank" rel="noopener">Zenodo ↗</a>
-          </div>
-        </div>
-
-        <div class="zenodo-card">
-          <div class="zenodo-card-title">Western Nafud Survey</div>
-          <div class="zenodo-card-desc">NW Saudi Arabia &amp; SE Jordan — EAMENA / Fradley (2025). Files in ZIP — download, extract, then upload below.</div>
-          <div class="zenodo-card-actions">
-            <a class="btn btn-small" href="https://zenodo.org/records/16992682" target="_blank" rel="noopener">Zenodo ↗</a>
-          </div>
-        </div>
-
-        <!-- Upload file -->
-        <div class="subsection-title" style="margin-top:16px;">Upload GeoJSON File</div>
         <div class="form-group">
-          <label for="imp-file">File (.geojson / .json)</label>
+          <label for="imp-file">GeoJSON / JSON file</label>
           <input type="file" id="imp-file" accept=".geojson,.json" class="form-input">
         </div>
         <div class="form-row">
@@ -212,53 +169,35 @@
             <label for="imp-file-name">Layer name</label>
             <input type="text" id="imp-file-name" class="form-input" placeholder="My Dataset">
           </div>
-          <div class="form-group" style="flex:0 0 60px;">
+          <div class="form-group" style="flex:0 0 64px;">
             <label for="imp-file-color">Color</label>
-            <input type="color" id="imp-file-color" value="#2980b9" class="form-input" style="padding:2px;height:38px;cursor:pointer;">
+            <input type="color" id="imp-file-color" value="#2980b9" class="form-input color-input">
           </div>
         </div>
-        <button class="btn btn-primary" id="btn-imp-file" style="width:100%;margin-top:4px;">Upload &amp; Add to Map</button>
-
-        <!-- URL loader -->
-        <div class="subsection-title" style="margin-top:16px;">Load from URL</div>
-        <div class="form-group">
-          <label for="imp-url">Direct GeoJSON URL</label>
-          <input type="url" id="imp-url" class="form-input" placeholder="https://zenodo.org/.../file.geojson?download=1">
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="imp-url-name">Layer name</label>
-            <input type="text" id="imp-url-name" class="form-input" placeholder="My Layer">
-          </div>
-          <div class="form-group" style="flex:0 0 60px;">
-            <label for="imp-url-color">Color</label>
-            <input type="color" id="imp-url-color" value="#27ae60" class="form-input" style="padding:2px;height:38px;cursor:pointer;">
-          </div>
-        </div>
-        <button class="btn btn-primary" id="btn-imp-url" style="width:100%;margin-top:4px;">Load from URL</button>
-
-      </div><!-- /tab-import -->
+        <button class="btn btn-primary btn-full" id="btn-imp-file">⬆ Upload &amp; Add to Map</button>
+      </div>
 
       <!-- ── CONTRIBUTE TAB ── -->
       <div class="tool-tab-body" id="tab-contribute" style="display:none;">
-        <div class="contribute-status" id="contrib-status-block">
-          <p>Click <strong>Start Adding</strong>, then click on the map to place a marker. Fill in the details and save.</p>
-          <button class="btn btn-primary" id="btn-start-contribute" style="margin-top:8px;">▶ Start Adding</button>
+
+        <div id="contrib-status-block">
+          <p class="tab-intro">Click <strong>Start Adding</strong>, then click anywhere on the map to place a marker. The panel will stay open — fill in the details and save.</p>
+          <button class="btn btn-primary" id="btn-start-contribute">▶ Start Adding</button>
         </div>
 
         <div id="contrib-form-block" style="display:none;">
-          <p style="font-size:.8rem;color:var(--color-accent);margin-bottom:12px;background:rgba(201,168,76,.12);border-left:3px solid var(--color-accent);padding:8px 10px;border-radius:0 4px 4px 0;">
-            📍 Click on the map to set position, then fill in details below.
-          </p>
+          <div class="contrib-active-banner">
+            📍 Click on the map to set position, then fill in the form.
+          </div>
           <form id="contribute-form" class="contribute-form">
             <div class="form-row">
               <div class="form-group">
                 <label>Lat <span class="required">*</span></label>
-                <input type="number" name="lat" id="contrib-lat" step="0.000001" readonly class="form-input" placeholder="click map">
+                <input type="number" name="lat" id="contrib-lat" step="0.000001" readonly class="form-input" placeholder="click map…">
               </div>
               <div class="form-group">
                 <label>Lng <span class="required">*</span></label>
-                <input type="number" name="lng" id="contrib-lng" step="0.000001" readonly class="form-input" placeholder="click map">
+                <input type="number" name="lng" id="contrib-lng" step="0.000001" readonly class="form-input" placeholder="click map…">
               </div>
             </div>
             <div class="form-group">
@@ -292,18 +231,18 @@
             </div>
             <div class="form-group">
               <label>Description</label>
-              <textarea name="description" class="form-input" rows="3" placeholder="Notes, observations…"></textarea>
+              <textarea name="description" class="form-input" rows="2" placeholder="Notes, observations…"></textarea>
             </div>
             <div class="form-group">
               <label>Source / Reference</label>
-              <input type="text" name="source" class="form-input" placeholder="URL, paper, personal survey…">
+              <input type="text" name="source" class="form-input" placeholder="URL, paper, survey…">
             </div>
             <div class="form-group">
               <label>Your Name</label>
               <input type="text" name="contributor" class="form-input" placeholder="Anonymous">
             </div>
-            <div class="form-row" style="margin-top:4px;">
-              <button type="submit" class="btn btn-primary">💾 Save Structure</button>
+            <div class="form-row" style="gap:8px;margin-top:6px;">
+              <button type="submit" class="btn btn-primary" style="flex:1;">💾 Save</button>
               <button type="button" class="btn" id="btn-cancel-contribute">✕ Cancel</button>
             </div>
           </form>
@@ -312,25 +251,24 @@
 
       <!-- ── EXPORT TAB ── -->
       <div class="tool-tab-body" id="tab-export" style="display:none;">
-        <div class="subsection-title">Export Visible Layers</div>
-        <p style="font-size:.78rem;color:var(--color-text-muted);margin-bottom:10px;">Download currently visible features as GeoJSON.</p>
+        <p class="tab-intro">Download currently visible features as GeoJSON.</p>
         <div class="export-options">
-          <label class="checkbox-option"><input type="checkbox" id="export-globalkites" checked><span>GlobalKites layers</span></label>
+          <label class="checkbox-option"><input type="checkbox" id="export-datasets" checked><span>All dataset layers</span></label>
           <label class="checkbox-option"><input type="checkbox" id="export-contributions" checked><span>My contributions</span></label>
-          <label class="checkbox-option"><input type="checkbox" id="export-imported" checked><span>Imported layers</span></label>
+          <label class="checkbox-option"><input type="checkbox" id="export-imported" checked><span>Uploaded layers</span></label>
         </div>
-        <button class="btn btn-primary" id="btn-download-geojson" style="width:100%;margin-top:10px;">⬇ Download GeoJSON</button>
+        <button class="btn btn-primary btn-full" id="btn-download-geojson" style="margin-top:10px;">⬇ Download GeoJSON</button>
 
-        <div class="subsection-title" style="margin-top:20px;">Export Individual Layers</div>
+        <div class="subsection-title" style="margin-top:20px;">Export Individual Layer</div>
         <div id="export-layer-list"></div>
-      </div><!-- /tab-export -->
+      </div>
 
-    </div><!-- /panel-content -->
+    </div>
   </aside>
 
-  <!-- feature info popup -->
-  <div id="feature-info" class="feature-info" role="dialog" aria-live="polite" hidden>
-    <button class="feature-info-close" aria-label="Close info">&times;</button>
+  <!-- feature info -->
+  <div id="feature-info" class="feature-info" hidden>
+    <button class="feature-info-close">&times;</button>
     <div class="feature-info-content"></div>
   </div>
 

@@ -13,19 +13,13 @@ const App = {
       MapManager.init('map');
       this.map = MapManager.getMap();
 
-      LayerManager.init(this.map);
+      await LayerManager.init(this.map);  // async — loads datasets.json
       UIManager.init();
       ContributionTool.init(this.map);
 
-      // Map click: hide feature info + handle contribution placement
-      this.map.on('click', e => {
-        UIManager.hideFeatureInfo();
-        if (this.contributionMode && !e.originalEvent?.target?.closest('.leaflet-popup')) {
-          ContributionTool.onMapClick(e);
-        }
-      });
-
+      this._bindMapEvents();
       this._addAppStyles();
+
       this.initialized = true;
       this._hideLoading();
       setTimeout(() => Utils.showToast('Welcome to Works of the Old Men Hub', 'success'), 400);
@@ -34,6 +28,27 @@ const App = {
       this._hideLoading();
       Utils.showToast('Failed to initialize: ' + e.message, 'error');
     }
+  },
+
+  _bindMapEvents() {
+    this.map.on('click', e => {
+      // Hide feature info popup on any map click
+      UIManager.hideFeatureInfo();
+
+      if (this.contributionMode) {
+        // In contribution mode: place marker, do NOT close panels
+        if (!e.originalEvent?.target?.closest('.leaflet-popup')) {
+          ContributionTool.onMapClick(e);
+        }
+      } else {
+        // Normal mode: clicking the map closes panels
+        UIManager.closeAllPanels();
+      }
+    });
+
+    // Close feature info button
+    document.querySelector('.feature-info-close')
+      ?.addEventListener('click', () => UIManager.hideFeatureInfo());
   },
 
   _waitForLeaflet() {
@@ -58,31 +73,31 @@ const App = {
     s.textContent = `
       .custom-popup .leaflet-popup-content-wrapper { border-radius:8px; box-shadow:0 4px 20px rgba(0,0,0,.18); }
       .custom-popup .leaflet-popup-content { margin:12px 14px; max-width:300px; }
-      .popup-content h4 { margin:0 0 6px; font-size:.92rem; color:#2c5f4a; }
+      .popup-content h4 { margin:0 0 6px; font-size:.9rem; color:#2c5f4a; }
       .popup-meta { margin:3px 0; font-size:.78rem; }
       .popup-meta strong { color:#333; }
-      .popup-coords { margin-top:7px; padding-top:7px; border-top:1px solid #eee; font-size:.68rem; color:#888; font-family:monospace; }
+      .popup-coords { margin-top:6px; padding-top:6px; border-top:1px solid #eee; font-size:.68rem; color:#888; font-family:monospace; }
       #map { width:100%; height:100%; display:block; }
       .leaflet-container { background:#1a1a1a; }
     `;
     document.head.appendChild(s);
   },
 
-  _showLoading(t='Loading…') {
-    const o=document.getElementById('loading-overlay'), te=document.getElementById('loading-text');
-    if(o&&te){ te.textContent=t; o.hidden=false; o.style.cssText=''; }
+  _showLoading(t = 'Loading…') {
+    const o = document.getElementById('loading-overlay'), te = document.getElementById('loading-text');
+    if (o && te) { te.textContent = t; o.hidden = false; o.style.cssText = ''; }
   },
   _hideLoading() {
-    const o=document.getElementById('loading-overlay');
-    if(o){ o.hidden=true; o.style.display='none'; }
+    const o = document.getElementById('loading-overlay');
+    if (o) { o.hidden = true; o.style.display = 'none'; }
   }
 };
 
 document.addEventListener('DOMContentLoaded', () => App.init());
 window.App = App;
 
-// Safety hide after 5s
+// Safety: force-hide loading after 6s
 setTimeout(() => {
   const o = document.getElementById('loading-overlay');
-  if (o && !o.hidden) { o.hidden=true; o.style.display='none'; }
-}, 5000);
+  if (o && !o.hidden) { o.hidden = true; o.style.display = 'none'; }
+}, 6000);
