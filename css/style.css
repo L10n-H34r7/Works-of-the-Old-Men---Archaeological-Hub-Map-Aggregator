@@ -87,9 +87,9 @@ body {
   font-weight: 400;
   margin-top: 2px;
 }
-.header-nav { display: flex; gap: 4px; }
+.header-nav { display: flex; gap: 4px; flex-wrap: wrap; }
 .nav-btn {
-  padding: 8px 16px;
+  padding: 8px 14px;
   border: none;
   background: transparent;
   color: var(--color-text);
@@ -138,6 +138,7 @@ body {
   display: flex; align-items: center; justify-content: space-between;
   padding: 16px; border-bottom: 1px solid var(--color-border);
   flex-shrink: 0;
+  position: sticky; top: 0; background: var(--color-bg-panel); z-index: 1;
 }
 .panel-header h2 { font-size: 1.1rem; font-weight: 600; color: var(--color-primary); }
 .panel-close {
@@ -161,7 +162,7 @@ body {
   padding: 2px 8px; border-radius: 999px;
 }
 .layer-attribution {
-  font-size: 0.7rem; color: var(--color-text-muted); margin-bottom: 12px;
+  font-size: 0.7rem; color: var(--color-text-muted); margin-bottom: 12px; line-height: 1.5;
 }
 .layer-attribution a { color: var(--color-primary); text-decoration: none; }
 .layer-attribution a:hover { text-decoration: underline; }
@@ -207,6 +208,7 @@ body {
   color: var(--color-text); font-size: 0.8rem; font-weight: 500;
   cursor: pointer; transition: var(--transition);
   display: inline-flex; align-items: center; gap: 6px;
+  text-decoration: none;
 }
 .btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
 .btn:focus-visible { outline: 2px solid var(--color-border-focus); outline-offset: 2px; }
@@ -224,14 +226,18 @@ body {
 .form-row .form-group { flex: 1; }
 .form-group label { font-size: 0.75rem; font-weight: 500; display: flex; align-items: center; gap: 4px; }
 .required { color: var(--color-error); }
-.form-group input, .form-group select, .form-group textarea {
+.form-group input, .form-group select, .form-group textarea,
+.form-input {
+  width: 100%;
   padding: 10px 12px; border: 1px solid var(--color-border);
   border-radius: var(--radius-sm); background: var(--color-bg-panel);
   color: var(--color-text); font-size: 0.875rem; font-family: inherit;
   transition: var(--transition);
 }
-.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-  outline: none; border-color: var(--color-border-focus);
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus,
+.form-input:focus {
+  outline: none;
+  border-color: var(--color-border-focus);
   box-shadow: 0 0 0 3px rgba(44, 95, 74, 0.15);
 }
 .form-group input[readonly] { background: var(--color-bg); cursor: not-allowed; }
@@ -246,8 +252,90 @@ body {
 }
 .contrib-item-type { font-weight: 600; color: var(--color-primary); text-transform: capitalize; }
 .contrib-item-coords { font-size: 0.7rem; color: var(--color-text-muted); font-family: monospace; }
-.contrib-item-actions button { font-size: 0.7rem; padding: 2px 6px; }
 
+/* ─── Zenodo Panel ─── */
+.zenodo-intro {
+  background: var(--color-bg);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+}
+.zenodo-intro a { color: var(--color-primary); }
+.zenodo-featured { display: flex; flex-direction: column; gap: 10px; }
+.zenodo-card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  background: var(--color-bg-panel);
+}
+.zenodo-card-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--color-primary);
+  margin-bottom: 5px;
+}
+.zenodo-card-desc {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  margin-bottom: 10px;
+  line-height: 1.45;
+}
+.zenodo-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+.zenodo-note {
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+  background: #fff8e1;
+  border-left: 3px solid #f39c12;
+  padding: 6px 10px;
+  border-radius: 0 4px 4px 0;
+  width: 100%;
+  line-height: 1.4;
+}
+@media (prefers-color-scheme: dark) {
+  .zenodo-note { background: #2d2800; }
+}
+.zenodo-url-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.zenodo-loaded-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+.zenodo-loaded-dot {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 1.5px solid rgba(0,0,0,0.15);
+}
+.zenodo-loaded-info { flex: 1; min-width: 0; }
+.zenodo-loaded-name {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.zenodo-loaded-count {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+}
+
+/* ─── Export ─── */
 .export-section { margin-bottom: 24px; }
 .export-section h3 { font-size: 0.875rem; font-weight: 600; margin-bottom: 12px; }
 .export-section p { font-size: 0.8rem; color: var(--color-text-muted); margin-bottom: 12px; }
@@ -256,6 +344,7 @@ body {
 .checkbox-option input { accent-color: var(--color-primary); }
 #export-layer-list { display: flex; flex-direction: column; gap: 6px; }
 
+/* ─── Feature info popup ─── */
 .feature-info {
   position: absolute; bottom: 80px; left: 20px; right: 20px;
   max-width: 360px;
@@ -271,12 +360,13 @@ body {
 }
 .feature-info-close:hover { background: var(--color-bg); color: var(--color-text); }
 .feature-info-content { padding: 16px; }
-.feature-info h4 { font-size: 1rem; font-weight: 600; color: var(--color-primary); margin-bottom: 8px; }
+.feature-info h4 { font-size: 1rem; font-weight: 600; color: var(--color-primary); margin-bottom: 8px; padding-right: 24px; }
 .feature-info .meta { font-size: 0.75rem; color: var(--color-text-muted); margin-bottom: 8px; }
 .feature-info .props { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: 0.8rem; }
 .feature-info .prop-label { color: var(--color-text-muted); }
 .feature-info .prop-value { font-weight: 500; }
 
+/* ─── Loading overlay ─── */
 .loading-overlay {
   position: fixed; inset: 0; background: rgba(255,255,255,0.9);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -286,6 +376,7 @@ body {
 .loading-spinner { width: 40px; height: 40px; border: 3px solid var(--color-border); border-top-color: var(--color-primary); border-radius: 50%; animation: spin 1s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* ─── Footer ─── */
 .app-footer {
   position: fixed; bottom: 0; left: 0; right: 0;
   background: var(--color-bg-panel); border-top: 1px solid var(--color-border);
@@ -295,6 +386,7 @@ body {
 .footer-content a { color: var(--color-primary); text-decoration: none; }
 .footer-content a:hover { text-decoration: underline; }
 
+/* ─── Leaflet overrides ─── */
 .leaflet-popup-content-wrapper { border-radius: var(--radius-md); box-shadow: var(--shadow-lg); }
 .leaflet-popup-content { margin: 12px 16px; line-height: 1.5; font-size: 0.85rem; }
 .leaflet-popup-tip { box-shadow: var(--shadow-lg); }
@@ -303,8 +395,15 @@ body {
 .leaflet-control-zoom a:hover { background: var(--color-bg); color: var(--color-primary); }
 
 .marker-contribution { filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
-.marker-contribution svg { width: 28px; height: 28px; }
 
+/* ─── About ─── */
+.about-content h3 { font-size: 0.95rem; font-weight: 600; color: var(--color-primary); margin: 16px 0 8px; }
+.about-content p { font-size: 0.82rem; color: var(--color-text-muted); margin-bottom: 8px; line-height: 1.6; }
+.about-content ul { font-size: 0.82rem; color: var(--color-text-muted); padding-left: 18px; margin-bottom: 8px; line-height: 1.7; }
+.about-content .source-list { list-style: disc; }
+.about-content a { color: var(--color-primary); }
+
+/* ─── Responsive ─── */
 @media (max-width: 768px) {
   :root { --panel-width: 100%; --header-height: 56px; }
   .app-title { font-size: 1rem; } .app-subtitle { display: none; }
@@ -317,6 +416,7 @@ body {
   .form-row { flex-direction: column; gap: 0; }
   .btn { width: 100%; justify-content: center; }
   .contribution-controls { flex-direction: column; }
+  .zenodo-card-actions { flex-direction: column; }
 }
 @media print {
   .app-header, .side-panel, .app-footer, .feature-info, .loading-overlay { display: none !important; }
