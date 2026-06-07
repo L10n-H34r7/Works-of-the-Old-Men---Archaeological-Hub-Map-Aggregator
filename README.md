@@ -12,6 +12,9 @@ Include get involved section.
 WIP : 
 To add a new dataset in the future: just drop the GeoJSON in data/yourfolder/ and add one entry to datasets.json — it appears automatically on next load. No code changes needed.
 
+Proposition the same culture extend from south africa up to fertile crescent and more. from paleo -> neo -> bronze 
+many incredible place are still to be found ! Andthe connections between these places and these people.
+
 
 ## Features
 
