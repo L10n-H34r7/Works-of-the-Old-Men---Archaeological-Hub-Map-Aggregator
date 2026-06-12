@@ -75,7 +75,7 @@ const App = {
     const geocoder = L.Control.geocoder({
       defaultMarkGeocode: false,
       position: 'topleft',
-      placeholder: '🔍 Search place or coordinates…',
+      placeholder: 'Search place or coordinates…',
       errorMessage: 'Nothing found.',
       geocoder: L.Control.Geocoder.nominatim({
         geocodingQueryParams: { limit: 8 }
@@ -83,13 +83,12 @@ const App = {
     })
     .on('markgeocode', e => {
       const { center, bbox, name } = e.geocode;
-      // Zoom to result
       if (bbox) {
         this.map.fitBounds(bbox, { maxZoom: 14, padding: [20, 20] });
       } else {
         this.map.setView(center, 13);
       }
-      // Briefly show a marker that fades
+      // Brief result marker
       const marker = L.circleMarker(center, {
         radius: 10, color: '#c9a84c', fillColor: '#c9a84c',
         fillOpacity: 0.7, weight: 2
@@ -98,6 +97,23 @@ const App = {
       setTimeout(() => this.map.removeLayer(marker), 6000);
     })
     .addTo(this.map);
+
+    // ── Fix 1: stop scroll events on the geocoder from zooming the map ──
+    // ── Fix 2: stop mousedown/click on the dropdown from closing the control ──
+    const el = geocoder.getContainer();
+    if (el) {
+      // Prevent scroll from propagating to Leaflet
+      L.DomEvent.disableScrollPropagation(el);
+      // Prevent clicks inside the control from propagating to the map
+      // (which would trigger our map-click → close-panels handler)
+      L.DomEvent.disableClickPropagation(el);
+
+      // Extra safety: also catch wheel events on the alternatives list
+      // after it is rendered (it's created dynamically on first search)
+      el.addEventListener('wheel', e => e.stopPropagation(), { passive: false });
+      el.addEventListener('mousedown', e => e.stopPropagation());
+      el.addEventListener('touchstart', e => e.stopPropagation(), { passive: true });
+    }
   },
 
   _addAppStyles() {
