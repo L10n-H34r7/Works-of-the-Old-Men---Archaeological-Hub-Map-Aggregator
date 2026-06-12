@@ -415,66 +415,91 @@ body {
   box-shadow: var(--shadow-md) !important;
   border: 1px solid var(--color-border) !important;
   background: var(--color-bg-panel) !important;
-  /* push it below the zoom buttons */
   margin-top: 8px !important;
 }
+
+/* The icon button — keep the original SVG, just fix background colour */
+.leaflet-control-geocoder-icon {
+  width: 34px !important;
+  height: 34px !important;
+  background-color: var(--color-bg-panel) !important;
+  border-radius: var(--radius-md) !important;
+  /* The SVG icon is embedded as a data URI in the plugin's CSS.
+     We only override the background-color, NOT background-image,
+     so the magnifier glyph stays visible. */
+  background-size: 20px 20px !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  cursor: pointer;
+}
+/* On dark mode, invert the black SVG strokes to white */
+@media (prefers-color-scheme: dark) {
+  .leaflet-control-geocoder-icon { filter: invert(1); }
+  .leaflet-control-geocoder-throbber .leaflet-control-geocoder-icon { filter: invert(1); }
+}
+
+/* Expanded form */
+.leaflet-control-geocoder-expanded {
+  background: var(--color-bg-panel) !important;
+  border-radius: var(--radius-md) !important;
+}
+.leaflet-control-geocoder-form {
+  display: none;
+  align-items: center;
+}
+.leaflet-control-geocoder-expanded .leaflet-control-geocoder-form {
+  display: inline-flex !important;
+}
 .leaflet-control-geocoder-form input {
-  width: 240px;
-  padding: 8px 12px;
-  font-size: .85rem;
-  font-family: inherit;
-  color: var(--color-text);
-  background: var(--color-bg-panel);
-  border: none;
-  outline: none;
-  border-radius: var(--radius-md);
+  width: 220px !important;
+  padding: 6px 10px !important;
+  font-size: .85rem !important;
+  font-family: inherit !important;
+  color: var(--color-text) !important;
+  background: var(--color-bg-panel) !important;
+  border: none !important;
+  outline: none !important;
 }
 .leaflet-control-geocoder-form input::placeholder { color: var(--color-text-muted); }
-.leaflet-control-geocoder-form button {
-  background: var(--color-bg-panel);
-  border: none;
-  color: var(--color-primary);
-  cursor: pointer;
-  padding: 0 10px;
-  font-size: 1rem;
-  border-radius: 0 var(--radius-md) var(--radius-md) 0;
-}
-.leaflet-control-geocoder-form button:hover { color: var(--color-primary-dark, #1d4333); }
-/* collapsed toggle button */
-.leaflet-control-geocoder-icon {
-  width: 36px !important; height: 36px !important;
-  line-height: 36px !important; font-size: 18px !important;
-  background: var(--color-bg-panel) !important;
-  color: var(--color-primary) !important;
-  border-radius: var(--radius-md) !important;
-  text-align: center;
-}
-/* results dropdown */
+
+/* Results dropdown — fix scroll stealing & click-close */
 .leaflet-control-geocoder-alternatives {
-  background: var(--color-bg-panel);
-  border: 1px solid var(--color-border);
-  border-top: none;
-  border-radius: 0 0 var(--radius-md) var(--radius-md);
-  box-shadow: var(--shadow-md);
-  max-height: 260px;
-  overflow-y: auto;
-  min-width: 260px;
+  background: var(--color-bg-panel) !important;
+  border: 1px solid var(--color-border) !important;
+  border-top: none !important;
+  border-radius: 0 0 var(--radius-md) var(--radius-md) !important;
+  box-shadow: var(--shadow-md) !important;
+  max-height: 240px !important;
+  overflow-y: auto !important;
+  width: 100% !important;
+  /* Critical: stop wheel events from reaching Leaflet */
+  overscroll-behavior: contain;
 }
 .leaflet-control-geocoder-alternatives li {
-  padding: 8px 12px;
-  font-size: .82rem;
-  color: var(--color-text);
+  padding: 8px 12px !important;
+  font-size: .82rem !important;
+  color: var(--color-text) !important;
+  white-space: normal !important;        /* allow wrapping */
+  overflow: visible !important;
   cursor: pointer;
-  border-bottom: 1px solid var(--color-border);
-  list-style: none;
+  border-bottom: 1px solid var(--color-border) !important;
 }
-.leaflet-control-geocoder-alternatives li:last-child { border-bottom: none; }
+.leaflet-control-geocoder-alternatives li:last-child { border-bottom: none !important; }
 .leaflet-control-geocoder-alternatives li:hover,
-.leaflet-control-geocoder-alternatives li.leaflet-control-geocoder-selected {
-  background: var(--color-bg);
-  color: var(--color-primary);
+.leaflet-control-geocoder-selected {
+  background: var(--color-bg) !important;
+  color: var(--color-primary) !important;
 }
-.leaflet-control-geocoder-alternatives a { text-decoration: none; color: inherit; }
+.leaflet-control-geocoder-alternatives a,
+.leaflet-control-geocoder-alternatives a:hover {
+  text-decoration: none;
+  color: inherit;
+  background: inherit;
+}
+.leaflet-control-geocoder-address-context {
+  color: var(--color-text-muted);
+  font-size: .75rem;
+}
 
 /* ═══════════════════════════════════════════
    LEAFLET OVERRIDES
