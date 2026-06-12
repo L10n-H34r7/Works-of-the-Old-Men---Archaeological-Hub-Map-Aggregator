@@ -18,6 +18,7 @@ const App = {
       ContributionTool.init(this.map);
 
       this._bindMapEvents();
+      this._addSearchControl();
       this._addAppStyles();
 
       this.initialized = true;
@@ -66,6 +67,37 @@ const App = {
     this.contributionMode = en;
     if (en) ContributionTool.enable();
     else    ContributionTool.disable();
+  },
+
+  _addSearchControl() {
+    if (!window.L?.Control?.Geocoder) return;
+
+    const geocoder = L.Control.geocoder({
+      defaultMarkGeocode: false,
+      position: 'topleft',
+      placeholder: '🔍 Search place or coordinates…',
+      errorMessage: 'Nothing found.',
+      geocoder: L.Control.Geocoder.nominatim({
+        geocodingQueryParams: { limit: 8 }
+      })
+    })
+    .on('markgeocode', e => {
+      const { center, bbox, name } = e.geocode;
+      // Zoom to result
+      if (bbox) {
+        this.map.fitBounds(bbox, { maxZoom: 14, padding: [20, 20] });
+      } else {
+        this.map.setView(center, 13);
+      }
+      // Briefly show a marker that fades
+      const marker = L.circleMarker(center, {
+        radius: 10, color: '#c9a84c', fillColor: '#c9a84c',
+        fillOpacity: 0.7, weight: 2
+      }).addTo(this.map);
+      marker.bindPopup(`<strong>📍 ${name}</strong>`).openPopup();
+      setTimeout(() => this.map.removeLayer(marker), 6000);
+    })
+    .addTo(this.map);
   },
 
   _addAppStyles() {
