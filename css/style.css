@@ -408,6 +408,75 @@ body {
 .about-content strong { color:var(--color-text); }
 
 /* ═══════════════════════════════════════════
+   GEOCODER / SEARCH CONTROL
+═══════════════════════════════════════════ */
+.leaflet-control-geocoder {
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-md) !important;
+  border: 1px solid var(--color-border) !important;
+  background: var(--color-bg-panel) !important;
+  /* push it below the zoom buttons */
+  margin-top: 8px !important;
+}
+.leaflet-control-geocoder-form input {
+  width: 240px;
+  padding: 8px 12px;
+  font-size: .85rem;
+  font-family: inherit;
+  color: var(--color-text);
+  background: var(--color-bg-panel);
+  border: none;
+  outline: none;
+  border-radius: var(--radius-md);
+}
+.leaflet-control-geocoder-form input::placeholder { color: var(--color-text-muted); }
+.leaflet-control-geocoder-form button {
+  background: var(--color-bg-panel);
+  border: none;
+  color: var(--color-primary);
+  cursor: pointer;
+  padding: 0 10px;
+  font-size: 1rem;
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+.leaflet-control-geocoder-form button:hover { color: var(--color-primary-dark, #1d4333); }
+/* collapsed toggle button */
+.leaflet-control-geocoder-icon {
+  width: 36px !important; height: 36px !important;
+  line-height: 36px !important; font-size: 18px !important;
+  background: var(--color-bg-panel) !important;
+  color: var(--color-primary) !important;
+  border-radius: var(--radius-md) !important;
+  text-align: center;
+}
+/* results dropdown */
+.leaflet-control-geocoder-alternatives {
+  background: var(--color-bg-panel);
+  border: 1px solid var(--color-border);
+  border-top: none;
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  box-shadow: var(--shadow-md);
+  max-height: 260px;
+  overflow-y: auto;
+  min-width: 260px;
+}
+.leaflet-control-geocoder-alternatives li {
+  padding: 8px 12px;
+  font-size: .82rem;
+  color: var(--color-text);
+  cursor: pointer;
+  border-bottom: 1px solid var(--color-border);
+  list-style: none;
+}
+.leaflet-control-geocoder-alternatives li:last-child { border-bottom: none; }
+.leaflet-control-geocoder-alternatives li:hover,
+.leaflet-control-geocoder-alternatives li.leaflet-control-geocoder-selected {
+  background: var(--color-bg);
+  color: var(--color-primary);
+}
+.leaflet-control-geocoder-alternatives a { text-decoration: none; color: inherit; }
+
+/* ═══════════════════════════════════════════
    LEAFLET OVERRIDES
 ═══════════════════════════════════════════ */
 .leaflet-popup-content-wrapper { border-radius:var(--radius-md); box-shadow:var(--shadow-lg); }
